@@ -1,0 +1,172 @@
+{
+  "generated_at": "2025-05-04T15:32:00",
+  "pipeline": {
+    "stage1": {
+      "model": "gpt-4o-mini",
+      "total_jobs": 234,
+      "top_k": 50,
+      "wall_time": 85.2
+    },
+    "stage1_5": {
+      "model": "gpt-4.1-mini",
+      "wall_time": 12.3,
+      "calibration_knowledge_length": 680
+    },
+    "stage2": {
+      "model": "gpt-4.1-mini",
+      "analyzed": 50,
+      "wall_time": 142.6,
+      "mode": "listwise",
+      "group_size": 6
+    },
+    "stage2_5": {
+      "model": "gpt-4.1-mini",
+      "reranked": 50,
+      "wall_time": 38.4
+    },
+    "post_judge": {
+      "penalties_applied": 4,
+      "rules": ["english_gate", "core_team_edu", "tech_dependency", "distribution"]
+    },
+    "direction_anchor": "AI自动化评测 / RAG知识检索 / AI标注平台 / Agent工作流"
+  },
+  "summary": {
+    "tier_A": 6,
+    "tier_B": 21,
+    "tier_C": 23
+  },
+  "recommendations": {
+    "tier_A": [
+      {
+        "job_id": "JOB_79",
+        "title": "产品-评测方向-AI Platform",
+        "department": "基础架构",
+        "location": "北京",
+        "stage1_score": 82,
+        "rank_in_group": 1,
+        "tier": "A",
+        "score": 95,
+        "match_reasons": [
+          "核心方向精准匹配：评测体系搭建是候选人L2级经验",
+          "AI Platform团队做的就是模型评测基础设施，与候选人经验高度吻合",
+          "团队需要的'评测指标设计+自动化流水线'能力恰好是候选人核心技能"
+        ],
+        "risks": [],
+        "advice": "强匹配岗位，建议优先投递。面试准备重点：评测指标选择的tradeoff、如何从0到1搭建评测体系的方法论"
+      },
+      {
+        "job_id": "JOB_142",
+        "title": "AI产品实习生-智能客服RAG方向",
+        "department": "客服平台",
+        "location": "北京",
+        "stage1_score": 78,
+        "rank_in_group": 1,
+        "tier": "A",
+        "score": 92,
+        "match_reasons": [
+          "RAG产品设计经验直接可用，迁移距离极短",
+          "知识库切分、召回优化是JD核心要求，候选人有完整项目经验",
+          "智能客服场景对RAG产品理解深度要求高，候选人具备"
+        ],
+        "risks": [
+          "JD提到'7x24值班轮转'，实习生可能需要偶尔参与线上问题处理"
+        ],
+        "advice": "方向高度匹配。准备案例：知识库切分策略的选择逻辑、召回率vs精确率的平衡经验"
+      },
+      {
+        "job_id": "JOB_15",
+        "title": "产品经理实习生-Agent平台",
+        "department": "AI创新业务",
+        "location": "北京",
+        "stage1_score": 75,
+        "rank_in_group": 2,
+        "tier": "A",
+        "score": 89,
+        "match_reasons": [
+          "Agent工作流设计是候选人方向锚点之一",
+          "Agent平台需要理解'工具编排+评测验证'闭环，候选人两方面都有经验",
+          "评测经验在Agent领域稀缺（多数候选人只懂搭建不懂验证）"
+        ],
+        "risks": [
+          "JD暗示需要一定coding能力（Python脚本编写），非纯产品角色"
+        ],
+        "advice": "匹配度高但角色偏技术产品。确认：是否接受写demo/脚本的工作内容"
+      }
+    ],
+    "tier_B": [
+      {
+        "job_id": "JOB_203",
+        "title": "搜索产品实习生-知识图谱方向",
+        "department": "搜索技术",
+        "location": "北京",
+        "stage1_score": 70,
+        "rank_in_group": 3,
+        "tier": "B",
+        "score": 78,
+        "match_reasons": [
+          "检索经验可迁移到搜索产品",
+          "知识图谱与RAG有技术交叉（知识组织方式）"
+        ],
+        "risks": [
+          "知识图谱≠RAG向量检索，技术栈有差异",
+          "搜索产品更偏传统IR，候选人经验偏生成式"
+        ],
+        "advice": "迁移有一定距离但方向相关。面试需要展示对'检索'的通用理解，不仅限于RAG场景",
+        "english_requirement": "",
+        "is_core_team": false,
+        "is_tech_strong": false
+      },
+      {
+        "job_id": "JOB_88",
+        "title": "数据产品实习生-模型训练数据",
+        "department": "数据平台",
+        "location": "杭州",
+        "stage1_score": 68,
+        "rank_in_group": 4,
+        "tier": "B",
+        "score": 74,
+        "match_reasons": [
+          "标注平台经验直接相关（训练数据是标注的下游）",
+          "数据质量理解能力可复用"
+        ],
+        "risks": [
+          "偏数据工程方向，产品设计空间可能有限",
+          "杭州 ≠ 候选人偏好城市（北京）"
+        ],
+        "advice": "方向匹配但岗位偏执行。确认：产品设计占比多少 vs 数据运营占比"
+      }
+    ],
+    "tier_C": [
+      {
+        "job_id": "JOB_56",
+        "title": "增长策略产品实习生-TikTok",
+        "department": "TikTok运营",
+        "location": "北京",
+        "stage1_score": 55,
+        "rank_in_group": 6,
+        "tier": "C",
+        "score": 58,
+        "match_reasons": [
+          "产品经理基本功可迁移（需求分析、A/B实验）"
+        ],
+        "risks": [
+          "增长策略与AI产品方向完全不同（迁移距离远）",
+          "核心技能（ROI建模、用户增长漏斗）候选人无经验",
+          "隐含国际化英语要求（TikTok团队日常英文沟通）"
+        ],
+        "advice": "方向偏离过大，不建议投递。候选人的AI评测/RAG经验在此岗位无法发挥",
+        "english_requirement": "implicit",
+        "is_core_team": false,
+        "is_tech_strong": false,
+        "post_penalties": ["direction_mismatch_severe"]
+      }
+    ]
+  },
+  "stage1_all_scores": [
+    {"job_id": "JOB_79", "title": "产品-评测方向-AI Platform", "score": 82},
+    {"job_id": "JOB_142", "title": "AI产品实习生-智能客服RAG方向", "score": 78},
+    {"job_id": "JOB_15", "title": "产品经理实习生-Agent平台", "score": 75},
+    {"job_id": "JOB_203", "title": "搜索产品实习生-知识图谱方向", "score": 70},
+    {"job_id": "JOB_88", "title": "数据产品实习生-模型训练数据", "score": 68}
+  ]
+}

@@ -1,0 +1,19 @@
+# 环境变量（含 API Key）
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# 运行时产物
+*.json.bak
+jobs_raw.txt
+scored_results.json
+boundary_profile.json
+candidate_summary.txt
+decision_context.json
+report.html
+
+# macOS
+.DS_Store

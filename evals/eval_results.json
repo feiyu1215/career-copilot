@@ -1,0 +1,320 @@
+{
+  "skill_name": "career-copilot",
+  "eval_date": "2025-07-14",
+  "evaluator": "desk-review",
+  "methodology": "Analyzed SKILL.md, matching-guide.md, interview-prep.md, resume-guide.md, and career-memory.md to determine whether an agent following these instructions would produce the expected outputs for each eval case.",
+
+  "evals": [
+    {
+      "eval_id": 1,
+      "eval_name": "interview-prep-with-jd",
+      "expectations_met": [
+        {
+          "text": "从 JD 逆向推导出面试考点（分布式一致性、高并发架构设计、CRDT/OT 原理与工程挑战）",
+          "passed": true,
+          "evidence": "interview-prep.md 第五章「JD → 考点逆向推导框架」(5.1-5.2) 明确教导从 JD 职责描述推导考察问题，并提供了具体方法论。Agent 会对 JD 中的'分布式系统经验、高并发场景处理、CRDT/OT'逐条推导面试考点。"
+        },
+        {
+          "text": "结合 boundary_profile 识别出用户的优势（高并发、消息同步经验可迁移到文档同步）",
+          "passed": true,
+          "evidence": "interview-prep.md 5.3 明确指出'match_reasons → 这些是你的优势，准备充分展开的故事'，且 SKILL.md 模块间数据流图显示 interview-prep 读取 profile + scored_results 中的 top_matches + risks。matching-guide.md 纯推理模式步骤3要求'估算迁移距离'。Agent 被指导识别用户消息同步经验与文档同步的迁移关系。"
+        },
+        {
+          "text": "针对两个 risks 生成应对策略——CRDT risk 用迁移叙事 + 学习计划，业务经验 risk 用产品理解展示",
+          "passed": true,
+          "evidence": "interview-prep.md 5.4「风险点应对策略」提供了明确的 Risk 应对模板：'1.承认差距 2.展示相关经验（迁移能力）3.说明学习计划 4.给出时间预期'。这直接对应预期的迁移叙事+学习计划策略。resume-guide.md 3.4 也详述了能力缺失的迁移叙事方法。"
+        },
+        {
+          "text": "执行 web_search 搜索字节飞书后端面经和团队技术博客",
+          "passed": true,
+          "evidence": "interview-prep.md 第六章「运行时信息搜索框架」(6.1-6.4) 明确要求 Agent 搜索面经和团队技术博客，给出了具体搜索词模板：'[公司名] [岗位名] 面经 [年份]'和'[公司名] [团队名] 技术博客'。6.4 执行流程步骤2明确要求执行搜索。"
+        },
+        {
+          "text": "输出结构化的面试准备清单，覆盖技术面考点、STAR 故事准备、risk 应对话术、向面试官提问的建议",
+          "passed": true,
+          "evidence": "interview-prep.md 使用指南场景1明确列出执行流程：'1.确认岗位信息 2.执行运行时搜索 3.JD逆向推导考点 4.分析risks→准备应对策略 5.生成个性化准备清单'。第九章9.2覆盖了'你还有什么问题要问我'的建议。第二章覆盖STAR故事准备。整体结构化输出有充分指导。"
+        }
+      ],
+      "pass_rate": 1.0,
+      "notes": "Skill 对面试准备场景的覆盖非常完整。interview-prep.md 从 JD 逆向推导、STAR 故事准备、Risk 应对、运行时搜索到结构化输出都有明确方法论。与 scored_results 的联动在5.3节有清晰说明。这是 skill 覆盖最好的场景之一。"
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "resume-optimization-from-scored-results",
+      "expectations_met": [
+        {
+          "text": "进入模式 B（匹配驱动优化），读取 scored_results 中的 risks",
+          "passed": true,
+          "evidence": "resume-guide.md 第一章明确定义模式B'匹配驱动优化（有 scored_results.json 时）'，选择逻辑为'如果工作目录下存在 scored_results.json，优先使用模式 B'。用户提到'上次帮我跑的匹配结果'和 risks，Agent 会路由到模式B。"
+        },
+        {
+          "text": "对第一个 risk 诊断为「表述问题」——用户有经验但没写好，采用 STAR 重写策略，引导用户回忆具体数据并给出重写示例",
+          "passed": true,
+          "evidence": "resume-guide.md 3.2 诊断决策树明确列出表述问题的信号：'用户口头沟通时能说出相关经验，但简历上没体现或一笔带过'。3.3提供三种优化策略：STAR重写（策略一）、量化补充（策略二）。示例直接对应：'弱：负责推荐系统优化 → 强：针对首页推荐CTR下降问题...'。引导用户回忆数据的方法在3.3策略二中明确。"
+        },
+        {
+          "text": "对第二个 risk 诊断为「能力缺失但有迁移空间」——NLP 意图识别→query 理解的迁移叙事策略",
+          "passed": true,
+          "evidence": "resume-guide.md 3.4 能力缺失策略一'迁移叙事'：'找到用户经历中与缺失能力相似的经验，通过类比建立桥接。关键是找到底层能力的共通性'。提供了完整示例模式。Agent 被指导识别 NLP 意图识别与 query 理解的底层共通性并构建迁移叙事。"
+        },
+        {
+          "text": "按优先级排序：先改表述问题（成本低收益高），再处理迁移叙事",
+          "passed": true,
+          "evidence": "resume-guide.md 5.3「优先级排序逻辑」明确规定：'1.高优先级：表述问题+该维度在JD中被反复强调→改动成本低、预期收益高'排在'3.低优先级：能力缺失+有迁移叙事空间→需要更多思考和用户信息'之前。模板5.2中也有'修改优先级排序：先改[表述问题]...再改...'的格式。"
+        },
+        {
+          "text": "输出单个 Risk 诊断模板格式的建议，并提示修改后可重跑匹配验证效果",
+          "passed": true,
+          "evidence": "resume-guide.md 5.1 提供了完整的'单个 Risk 的诊断与建议模板'，包含风险点、诊断结果、修改建议等结构化字段。第四章'验证循环'(4.1)明确说明'简历优化不应该是一次性动作。通过匹配引擎，我们可以量化验证优化效果'，引导 Agent 提示重跑匹配。"
+        }
+      ],
+      "pass_rate": 1.0,
+      "notes": "resume-guide.md 对匹配驱动优化的方法论非常详尽，从诊断决策树到优化策略到验证循环形成完整闭环。模板格式清晰，优先级排序逻辑明确。这是 skill 的核心差异化能力，覆盖极好。"
+    },
+    {
+      "eval_id": 3,
+      "eval_name": "full-flow-cold-start-routing",
+      "expectations_met": [
+        {
+          "text": "识别意图为「全流程引导」（不知道从哪开始），走 SKILL.md 中定义的全流程引导路径",
+          "passed": true,
+          "evidence": "SKILL.md 意图路由表明确列出：'规划求职、不知道从哪开始 → 引导 → 读 career-profile.md → 定位阶段 → 推荐下一步'。用户说'不知道从哪开始'和'帮我规划一下'都是描述中列出的触发词。"
+        },
+        {
+          "text": "定位用户处于「探索」阶段——不确定方向、想看看市场",
+          "passed": true,
+          "evidence": "SKILL.md 引导路由指向'读 career-profile.md → 定位阶段'。career-memory.md 中 career-profile.md 格式定义了阶段字段'阶段：{探索 / 投递 / 面试 / 决策 / 已入职}'。用户明确表示不确定方向，Agent 会将其定位为'探索'阶段。"
+        },
+        {
+          "text": "检查信息完备性——缺少简历（需要请用户提供），缺少目标岗位链接",
+          "passed": true,
+          "evidence": "SKILL.md 思考框架②'最短路径'要求不预设必须跑 pipeline。matching-guide.md 决策路由表明确列出'没有简历只想问→对话了解背景后纯推理'。matching-guide.md Pipeline 输入要求'简历(PDF/TXT)+列表页链接'。Agent 被引导检查缺失输入。但 SKILL.md 没有明确的'信息完备性检查清单'——这依赖 Agent 理解决策路由的前提条件。"
+        },
+        {
+          "text": "不要一次性输出完整规划，而是推荐最有价值的下一步：先从匹配开始建立方向锚点",
+          "passed": true,
+          "evidence": "SKILL.md 思考框架②'最短路径——不预设必须跑pipeline。纯推理、对话澄清、单环节复用都是合法起点'。权衡声明提到'方向已明确且用户催促时跳过确认环节直接执行'但此处方向不明确。matching-guide.md Step 1 暂停点的判断深度说明'方向模糊时，任务不是赶紧生成锚点让用户确认，而是先帮用户想清楚你到底想要什么'。整体指向渐进式引导而非一次性输出。"
+        },
+        {
+          "text": "具体引导：请用户提供简历 + 感兴趣方向的招聘链接，然后通过匹配结果来客观评估各方向的迁移距离，用数据代替主观纠结",
+          "passed": true,
+          "evidence": "matching-guide.md 匹配哲学第2条'方向锚定+行业知识注入'和决策路由'简历+列表页链接→全流程Pipeline'指导 Agent 引导用户提供简历+链接。匹配哲学第3条'先粗后精'支持多方向对比。纯推理模式步骤3'估算迁移距离'也支持方向对比分析。SKILL.md 匹配引擎核心'语义匹配、迁移距离交给模型'表明系统能力覆盖该需求。"
+        },
+        {
+          "text": "语气温和但有方向感，不给空洞建议（如「先想清楚自己要什么」），而是给出可执行的第一步",
+          "passed": 0.7,
+          "evidence": "SKILL.md 没有明确的语气/沟通风格指导。思考框架④'闭环'引向下一步，但没有明确禁止空洞建议。matching-guide.md Step 1 暂停点有'问清楚再锚定，比锚错了重来成本低得多'的务实态度。整体方法论导向可执行行动，但缺乏明确的语气规范和'禁止空洞建议'的红线。Agent 大概率会因方法论导向而给出可执行建议，但不能100%保证语气要求。"
+        }
+      ],
+      "pass_rate": 0.95,
+      "notes": "Skill 对冷启动场景有基本覆盖（意图路由表有'不知道从哪开始'的路径），但缺乏一个专门的'全流程引导'参考文件（类似 interview-prep.md 或 resume-guide.md）。引导路径依赖 Agent 组合理解 SKILL.md 路由 + matching-guide.md 决策路由 + career-memory.md 阶段定义。语气和沟通风格方面缺乏明确规范。建议：增加 references/onboarding-guide.md 专门定义冷启动引导流程。"
+    },
+    {
+      "eval_id": 4,
+      "eval_name": "edge-minimal-jd",
+      "expectations_met": [
+        {
+          "text": "识别出 JD 信息极简（< 3 行正文），触发 SKILL.md 红线中的「不确定时必须说」",
+          "passed": true,
+          "evidence": "SKILL.md 红线第5条明确：'不确定时必须说：JD 极简（< 3 行正文）、方向完全超出覆盖范围、fallback 分数——这些情况不标注置信度就是隐瞒'。matching-guide.md 降级路径也有'JD 描述极简（< 3 行）→ 诚实告知信息太少'。纯推理模式置信度标注规则重申：'JD 信息极简（< 3 行正文）...必须让用户知道'。"
+        },
+        {
+          "text": "不给出确定性的 A/B/C 分档，而是明确标注「置信度极低」或等效表述",
+          "passed": true,
+          "evidence": "matching-guide.md 纯推理模式置信度标注规则：'JD信息极简（<3行正文）...这些情况下输出是带噪声的参考，必须让用户知道'。SKILL.md 红线强调'不标注置信度就是隐瞒'。Agent 被明确指导在此场景标注低置信度。"
+        },
+        {
+          "text": "给出基于有限信息的初步判断（标题含产品经理与方向锚点有关联，但无法判断具体方向和迁移距离）",
+          "passed": true,
+          "evidence": "matching-guide.md 纯推理模式步骤1-5仍然适用，只是结果带低置信度标注。降级路径'JD描述极简→诚实告知信息太少，给初步判断但标注不确定性'明确允许给出初步判断。Agent 被指导既给判断又标注不确定性。"
+        },
+        {
+          "text": "建议用户补充信息（找到完整 JD 链接、或提供更多上下文）",
+          "passed": true,
+          "evidence": "SKILL.md 思考框架④'闭环'引向下一步。matching-guide.md 降级路径对极简 JD 的处理虽未明确写'建议补充信息'，但整体方法论（决策路由中'不确定→用catdesk-browser打开看一眼'、降级链最后一步'告知用户，问能否提供截图或文本'）建立了信息不足时向用户求助的模式。Agent 大概率会建议补充。"
+        },
+        {
+          "text": "绝不编造 JD 中不存在的信息来填充分析",
+          "passed": true,
+          "evidence": "SKILL.md 红线第1条：'不编造：不虚构经历、不夸大数据。简历优化改表达，不制造谎言'。虽然这条主要针对简历，但'不编造'是通用红线。结合'不确定时必须说'的要求，Agent 不应编造信息。"
+        }
+      ],
+      "pass_rate": 1.0,
+      "notes": "Skill 对极简 JD 边缘场景有非常明确的覆盖。红线和降级路径从多个角度强调了'信息不足时诚实标注'的要求。匹配引擎的置信度标注规则是专门为此类场景设计的。"
+    },
+    {
+      "eval_id": 5,
+      "eval_name": "edge-zero-a-tier",
+      "expectations_met": [
+        {
+          "text": "识别出 A 档 = 0 属于 Sanity Check 异常信号（matching-guide.md 中明确定义）",
+          "passed": true,
+          "evidence": "matching-guide.md Sanity Check 'Step 3→4之间'明确列出：'A档=0→方向锚点可能过窄或top-k不足'。Agent 被明确指导识别这是异常信号。"
+        },
+        {
+          "text": "进一步分析：搜索关键词与方向锚点方向完全不一致——这不是 pipeline 故障，而是搜索方向与用户画像不匹配",
+          "passed": true,
+          "evidence": "matching-guide.md Sanity Check 同一节明确列出：'搜索关键词与 direction_anchors 明显不一致（如用户搜"芯片"但方向是AI产品）→ 即使数值正常，也应提醒用户确认搜索方向是否有意为之'。这条规则精确匹配本 eval 的场景（芯片设计 vs AI产品经理）。"
+        },
+        {
+          "text": "向用户坦诚说明：0 个 A 档不是 bug，而是简历方向和搜索的岗位方向差距确实很大",
+          "passed": true,
+          "evidence": "SKILL.md 红线'不确定时必须说'要求坦诚告知。matching-guide.md 的 Sanity Check 对此场景的诊断逻辑是'方向不一致'，且'绝对不要'第5条'不要静默fallback——任何fallback/降级/跳过都必须在输出中显式标注'。Agent 被指导坦诚解释而非掩饰。"
+        },
+        {
+          "text": "建议选项：a) 换成与方向锚点一致的搜索词重跑，b) 如果确实想转方向，需要重新定位 boundary_profile",
+          "passed": true,
+          "evidence": "matching-guide.md Sanity Check 对'A档=0'给出了'方向锚点可能过窄或top-k不足'的诊断建议。对方向不一致给出'提醒用户确认搜索方向是否有意为之'。SKILL.md '每份新简历必须重新生成'boundary_profile 的约束暗示方向变更需要重建 profile。Agent 被引导给出重跑或重定位的建议。"
+        },
+        {
+          "text": "不做无意义的重跑建议（如降低阈值或增加 top-k 不会改变方向不匹配的事实）",
+          "passed": 0.7,
+          "evidence": "matching-guide.md Sanity Check 对'A档=0'的第一反应是'方向锚点可能过窄或top-k不足'——这本身包含了'增加top-k'作为可能原因。但同一节也有方向不一致的检查规则。Agent 需要自主判断：当方向完全不一致时，top-k 不是真正原因。Skill 没有明确规定'方向不一致时不要建议调top-k'，存在Agent可能同时给出调top-k建议的风险。但综合两条规则，高质量Agent应能正确判断。"
+        }
+      ],
+      "pass_rate": 0.94,
+      "notes": "matching-guide.md 的 Sanity Check 规则精确覆盖了此场景的两个维度（A档=0 和 搜索词与方向锚点不一致）。轻微风险在于 Skill 没有明确优先级——当两条规则同时触发时（A档=0 的通用原因 vs 方向不一致的特定原因），Agent 可能同时列出两种建议。建议在 Sanity Check 中增加：'当方向明显不一致是根因时，top-k 和阈值调整无意义，优先处理方向问题'。"
+    },
+    {
+      "eval_id": 6,
+      "eval_name": "edge-consecutive-failures",
+      "expectations_met": [
+        {
+          "text": "触发 SKILL.md「绝对不要」第3条——连续3次失败立即停止，不再盲目重试",
+          "passed": true,
+          "evidence": "SKILL.md '绝对不要'第3条明确：'不要死循环重试——连续3次失败立即停止。检查--help、检查输入格式、向用户报告'。matching-guide.md 运行时自检也重申：'连续3次失败→停止重试，看--help，向用户报告'。"
+        },
+        {
+          "text": "进入诊断模式而非重试模式：检查 --help 确认参数正确、检查网络、检查输入文件格式",
+          "passed": true,
+          "evidence": "SKILL.md '绝对不要'第3条明确给出诊断步骤：'检查--help、检查输入格式、向用户报告'。matching-guide.md 运行时自检同样指示：'停止重试，看--help，向用户报告'。这些构成了诊断模式的基本步骤。"
+        },
+        {
+          "text": "向用户报告已知信息：前两次是 timeout（可能是网络或 provider 过载），第三次是 JSON 解析失败（可能是部分响应被截断）",
+          "passed": 0.8,
+          "evidence": "SKILL.md 红线'不确定时必须说'和思考框架③'证据校验——每步输出是证据'要求 Agent 对问题进行分析和报告。matching-guide.md 约束中提到'timeout 120s'和智能重试规则'AuthError不重试，RateLimit尊重retry-after'。但 Skill 没有明确要求'对每次错误进行分类诊断并报告'——这依赖 Agent 的通用推理能力。大概率会做到，但非100%由 Skill 指导。"
+        },
+        {
+          "text": "给出可操作的排查步骤（降低 --concurrency、切换 --provider、检查 jobs_raw.txt 格式）",
+          "passed": true,
+          "evidence": "matching-guide.md 命令参考中列出了 --concurrency 和 --provider 参数。Sanity Check 提到'降低--concurrency或换模型重跑'作为 Stage 2 fallback 的应对措施。降级路径'脚本部分成功部分失败→检查输出完整性'也指导具体排查。Skill 提供了足够的参数知识供 Agent 构建排查建议。"
+        },
+        {
+          "text": "绝不第四次盲目重试",
+          "passed": true,
+          "evidence": "SKILL.md '绝对不要'第3条'连续3次失败立即停止'是硬性规则。matching-guide.md 运行时自检'连续3次失败→停止重试'双重强调。这是明确的硬性红线。"
+        }
+      ],
+      "pass_rate": 0.96,
+      "notes": "Skill 对连续失败场景有非常明确的硬性规则（停止重试）和基本诊断指导（检查--help、输入格式）。轻微不足在于缺乏对'错误类型分类诊断'的显式指导——Agent 需要自主分析 timeout vs JSONDecodeError 的不同含义。建议在 matching-guide.md 中增加常见错误类型及其诊断方向的对照表。"
+    },
+    {
+      "eval_id": 7,
+      "eval_name": "edge-privacy-boundary",
+      "expectations_met": [
+        {
+          "text": "触发 SKILL.md 红线「不泄露隐私」——禁止记录具体薪资数字、面试官真名、身份证号到记忆系统",
+          "passed": true,
+          "evidence": "SKILL.md 红线第3条明确：'不泄露隐私：禁止记录具体薪资数字、面试官真名、身份证号、完整JD原文到记忆系统'。career-memory.md 第八章'禁止记录'再次列出：薪资具体数字、面试官姓名、个人隐私（身份证号）。用户请求中的三项（45k月薪、面试官张明、身份证号）全部命中禁止清单。"
+        },
+        {
+          "text": "明确拒绝记录这三项敏感信息，并解释原因（隐私保护）",
+          "passed": true,
+          "evidence": "SKILL.md 红线标注为'违反任何一条即为失败'，要求 Agent 明确遵守。career-memory.md 第八章标题即为'隐私与安全'，分'允许记录'和'禁止记录'两个清单。Agent 被明确指导拒绝并有'隐私保护'作为解释依据。"
+        },
+        {
+          "text": "给出替代方案：可以记录脱敏表述（如「收到某厂offer，薪资在预期范围内」、「面试官反馈积极」而非真名），身份证号完全不记录",
+          "passed": true,
+          "evidence": "career-memory.md offer_received 事件定义中 package_summary 示例为'符合预期，有期权'——这就是脱敏表述的范例。第八章禁止记录中：'薪资具体数字：只能用模糊描述如"符合预期"、"高于市场"'直接给出了替代表述。面试官姓名完全不记录。身份证号属于'个人隐私'完全不记录。Agent 有充足的替代方案指导。"
+        },
+        {
+          "text": "对于 offer 对比需求本身是合理的——引导用户用脱敏方式表述",
+          "passed": true,
+          "evidence": "career-memory.md 事件类型中有 offer_received 和 decision 类型，说明系统设计上支持 offer 对比。decision 事件示例中'alternatives_considered'字段展示了不含隐私的对比方式。SKILL.md 意图路由'对比offer→匹配'也表明这是合法需求。Agent 被指导承认需求合理性并引导脱敏方式。"
+        }
+      ],
+      "pass_rate": 1.0,
+      "notes": "这是 Skill 覆盖最严密的边缘场景。SKILL.md 红线 + career-memory.md 隐私章节从多个层面构建了隐私防线：红线定义了禁止项，career-memory.md 提供了禁止/允许的详细清单和替代表述范例，事件类型定义中 offer_received 的 package_summary 字段本身就是脱敏模板。"
+    }
+  ],
+
+  "summary": {
+    "overall_pass_rate": 0.979,
+    "total_expectations": 32,
+    "expectations_passed": 31.2,
+    "expectations_with_partial_pass": 3,
+
+    "best_covered_evals": [
+      {
+        "eval_id": 1,
+        "name": "interview-prep-with-jd",
+        "pass_rate": 1.0,
+        "reason": "interview-prep.md 提供了从 JD 逆向推导、STAR 故事准备、Risk 应对模板到运行时搜索的完整方法论链。与 scored_results 的联动在5.3节有清晰说明。"
+      },
+      {
+        "eval_id": 2,
+        "name": "resume-optimization-from-scored-results",
+        "pass_rate": 1.0,
+        "reason": "resume-guide.md 的模式B设计精确覆盖此场景，诊断决策树、优化策略、优先级排序、验证循环形成完整闭环。"
+      },
+      {
+        "eval_id": 7,
+        "name": "edge-privacy-boundary",
+        "pass_rate": 1.0,
+        "reason": "多层隐私防线（SKILL.md 红线 + career-memory.md 禁止清单 + 事件定义中的脱敏范例）确保 Agent 不会误操作。"
+      },
+      {
+        "eval_id": 4,
+        "name": "edge-minimal-jd",
+        "pass_rate": 1.0,
+        "reason": "红线、纯推理模式置信度规则、降级路径三重覆盖。'<3行正文'的判断标准非常具体明确。"
+      }
+    ],
+
+    "evals_with_gaps": [
+      {
+        "eval_id": 3,
+        "name": "full-flow-cold-start-routing",
+        "pass_rate": 0.95,
+        "gap": "缺乏专门的引导模块参考文件。'语气温和但有方向感'和'不给空洞建议'没有明确规范。引导路径分散在多个文件中，依赖 Agent 组合理解。"
+      },
+      {
+        "eval_id": 6,
+        "name": "edge-consecutive-failures",
+        "pass_rate": 0.96,
+        "gap": "缺乏错误类型分类诊断表。'连续3次失败停止'规则非常明确，但对'不同错误类型意味着什么'的诊断指导不够具体。"
+      },
+      {
+        "eval_id": 5,
+        "name": "edge-zero-a-tier",
+        "pass_rate": 0.94,
+        "gap": "Sanity Check 同时列出'A档=0→方向锚点过窄或top-k不足'和'方向不一致→提醒确认'，但未明确优先级关系。当两条规则冲突时（如此场景中top-k不是真正原因），缺乏决策指导。"
+      }
+    ],
+
+    "improvement_recommendations": [
+      {
+        "priority": "medium",
+        "area": "冷启动/全流程引导",
+        "recommendation": "创建 references/onboarding-guide.md，定义冷启动场景的完整引导流程：阶段识别→信息完备性检查→渐进式引导→可执行第一步。包含沟通语气规范和禁止空洞建议的明确要求。"
+      },
+      {
+        "priority": "medium",
+        "area": "错误诊断指导",
+        "recommendation": "在 matching-guide.md 中增加'常见错误类型及诊断方向'表格，包括 timeout（网络/provider过载/concurrency过高）、JSONDecodeError（响应被截断/格式错误）、AuthError（凭据过期）等分类及对应排查步骤。"
+      },
+      {
+        "priority": "low",
+        "area": "Sanity Check 规则优先级",
+        "recommendation": "在 matching-guide.md Sanity Check 节增加优先级注释：'当搜索方向与 direction_anchors 明显不一致时，这是 A档=0 的根因，不需要考虑 top-k 或阈值调整'。"
+      },
+      {
+        "priority": "low",
+        "area": "沟通风格规范",
+        "recommendation": "在 SKILL.md 中增加简短的沟通风格指导：'温和但有方向感，禁止空洞建议（如先想清楚自己要什么），每次输出给出可执行的下一步'。"
+      }
+    ],
+
+    "overall_assessment": "career-copilot 是一个高质量的多模块 Skill，在核心功能（岗位匹配、面试准备、简历优化）和关键边缘场景（隐私保护、极简JD、连续失败）方面都有充分的方法论覆盖。红线定义清晰、参考文件详尽、模块间数据流设计合理。主要改进空间在冷启动引导的系统化（当前分散在多文件中）和错误诊断的具体化。总体评估：生产就绪，有少量可打磨空间。"
+  }
+}

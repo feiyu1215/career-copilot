@@ -1,0 +1,11 @@
+# Career Copilot — Python 依赖
+# 安装: pip install -r requirements.txt
+
+# LLM 调用（硬依赖）
+openai>=1.0
+
+# PDF 简历解析（至少装一个）
+pypdf>=3.0
+
+# 测试（开发时使用）
+pytest>=7.0
