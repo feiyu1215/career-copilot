@@ -1,0 +1,48 @@
+{
+  "id": "golden_007",
+  "meta": {
+    "track": "non-tech",
+    "role_family": "product",
+    "transition": false,
+    "career_stage": "experienced",
+    "match_band": "mid"
+  },
+  "profile": {
+    "direction_anchors": [
+      "产品需求",
+      "数据驱动",
+      "用户增长",
+      "SQL",
+      "用户研究"
+    ],
+    "hard_negatives": [
+      "写代码/算法开发",
+      "纯设计"
+    ],
+    "skills": [
+      "PRD",
+      "数据分析",
+      "A/B 实验",
+      "用户访谈",
+      "SQL",
+      "增长漏斗"
+    ],
+    "years_experience": 4
+  },
+  "jd_title": "产品经理（用户增长方向）",
+  "jd_department": "",
+  "jd_location": "",
+  "jd_text": "【产品经理（用户增长方向）】职责：负责 C 端用户增长策略，搭建增长实验体系，驱动拉新/留存/转化；输出 PRD 与数据复盘。要求：本科及以上，4 年以上产品经理经验，有增长/留存项目；熟练数据驱动决策，能用 SQL 自助取数；具备用户研究方法；有较强的跨团队推动力。",
+  "sample_resume": "【样例简历·合成测试数据，非真实个人经历】\n意向：产品经理（用户增长）｜4 年经验\n经历：某 C 端产品 产品经理（2022-至今）——增长策略与实验体系，拉新/留存/转化；输出 PRD 与数据复盘；用户访谈。\n技能：PRD、数据分析、A/B 实验、用户访谈、SQL、增长漏斗。\n教育：本科。\n注：大规模增长体系从0到1证据弱。",
+  "expected_score": 77,
+  "expected_tier": "B",
+  "tolerance": 5,
+  "key_reasons": [
+    "PRD/数据驱动/用户增长/SQL/用户研究命中，增长漏斗与 A/B 实验命中优先项",
+    "年限临界、大规模增长体系从0到1证据弱",
+    "无硬负向命中（非开发/设计）"
+  ],
+  "difficulty": "medium",
+  "annotator": "human",
+  "annotated_at": "2026-07-28"
+}

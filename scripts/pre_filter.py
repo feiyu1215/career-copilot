@@ -8,6 +8,7 @@ pre_filter.py — Stage 1 之前的确定性预过滤
 1. 方向词检测：JD 标题/内容是否包含候选人方向的关键词
 2. 硬门槛过滤：JD 有明确英语硬要求 + 候选人完全不达标 → 直接排除
 3. 惩罚标记：不完全排除，但标记 penalty 供 Stage 1 参考
+4. 质量守门（Phase 4.3）：正文过短（< min_jd_chars）直接丢弃；命中诈骗/垃圾强信号（付费内推/培训贷/招转培等）判 spam 跳过
 
 使用方式：
     from pre_filter import pre_filter
@@ -134,16 +135,29 @@ def detect_experience_requirement(jd_text: str) -> Optional[int]:
 # 主函数
 # ============================================================
 
+# 正文最短字数阈值：低于此值视为信息不足，直接丢弃（Phase 4.3）。
+MIN_JD_CHARS = 100
+
 # 默认配置
 DEFAULT_FILTER_CONFIG = {
     "include_intern": False,       # 是否保留实习岗
     "include_outsource": False,    # 是否保留外包岗
     "max_year_requirement": 10,    # 超过此年限要求的 JD 才被排除
+    "min_jd_chars": 0,  # 库默认关闭（=0 视为不限制）；生产入口（smart_score / pre_filter CLI）显式设阈值（Phase 4.3）
 }
 
 # 实习/外包关键词
 _INTERN_SIGNALS = ["实习", "实习生", "intern", "internship"]
 _OUTSOURCE_SIGNALS = ["外包", "外协", "劳务派遣", "outsource", "contractor"]
+
+# 垃圾/诈骗 JD 强信号（Phase 4.3）：命中即判 spam 跳过，不进入 Stage 1。
+# 仅收录无歧义的诈骗/违规措辞，避免误伤正常 JD（如"公司提供培训体系"不应被误杀）。
+_SPAM_SIGNALS = [
+    "付费内推", "收费内推", "有偿内推", "内推收费",
+    "培训贷", "培训贷款", "贷款培训", "招转培", "招转培训",
+    "面试收费", "入职收费", "收取押金", "交押金", "办卡费",
+    "先交费", "预交费",
+]
 
 
 def pre_filter(jobs: list[dict], profile: dict,
@@ -174,6 +188,8 @@ def pre_filter(jobs: list[dict], profile: dict,
     excluded_intern = 0
     excluded_outsource = 0
     excluded_experience = 0
+    excluded_short = 0
+    excluded_spam = 0
     total = len(jobs)
 
     for job in jobs:
@@ -182,9 +198,23 @@ def pre_filter(jobs: list[dict], profile: dict,
         search_text = (title + " " + jd_text).lower()
         meta = {}
 
-        # Rule 0a: 实习过滤
+        # Rule 4: 垃圾/诈骗信号 → spam 跳过（优先于过短判定，短垃圾 JD 也应被识别）
+        spam_hit = next((s for s in _SPAM_SIGNALS if s in search_text), None)
+        if spam_hit:
+            excluded_spam += 1
+            continue
+
+        # Rule 3: 过短 JD 直接丢弃（min_jd_chars>0 时，正文不足阈值视为信息不足）
+        if cfg["min_jd_chars"] and len(jd_text.strip()) < cfg["min_jd_chars"]:
+            excluded_short += 1
+            continue
+
+        # Rule 0a: 实习过滤（只检查标题，不检查正文）
+        # 校招正式岗 JD 正文常含"实习经验优先"等描述，不等于岗位本身是实习。
+        # 真正的实习岗标题必含"实习生/实习"字样。
         if not cfg["include_intern"]:
-            if any(sig in search_text for sig in _INTERN_SIGNALS):
+            title_lower = title.lower()
+            if any(sig in title_lower for sig in _INTERN_SIGNALS):
                 excluded_intern += 1
                 continue
 
@@ -236,6 +266,8 @@ def pre_filter(jobs: list[dict], profile: dict,
         "excluded_intern": excluded_intern,
         "excluded_outsource": excluded_outsource,
         "excluded_experience": excluded_experience,
+        "filtered_short_count": excluded_short,
+        "filtered_spam_count": excluded_spam,
         "positive_keywords_used": len(positive_kw),
         "negative_keywords_used": len(negative_kw),
     }
@@ -243,7 +275,8 @@ def pre_filter(jobs: list[dict], profile: dict,
     print(f"  [Pre-Filter] 输入: {total} | 通过: {len(passed)} | "
           f"英语排除: {excluded_english} | 方向排除: {excluded_direction} | "
           f"实习排除: {excluded_intern} | 外包排除: {excluded_outsource} | "
-          f"年限排除: {excluded_experience}")
+          f"年限排除: {excluded_experience} | "
+          f"过短丢弃: {excluded_short} | 垃圾跳过: {excluded_spam}")
 
     return passed, stats
 
@@ -272,6 +305,8 @@ if __name__ == "__main__":
     parser.add_argument("--include-outsource", action="store_true", help="保留外包岗")
     parser.add_argument("--max-year-requirement", type=int, default=10,
                        help="超过此年限要求的 JD 才被排除（默认10）")
+    parser.add_argument("--min-jd-chars", type=int, default=MIN_JD_CHARS,
+                       help=f"正文最短字数，低于此值直接丢弃（默认{MIN_JD_CHARS}）")
     args = parser.parse_args()
 
     jobs = parse_jobs_raw(args.jobs)
@@ -281,6 +316,7 @@ if __name__ == "__main__":
         "include_intern": args.include_intern,
         "include_outsource": args.include_outsource,
         "max_year_requirement": args.max_year_requirement,
+        "min_jd_chars": args.min_jd_chars,
     }
     filtered, stats = pre_filter(jobs, profile,
                                   min_direction_score=args.min_direction,

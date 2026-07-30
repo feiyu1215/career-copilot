@@ -1,0 +1,39 @@
+{
+  "id": "golden_004",
+  "profile": {
+    "direction_anchors": [
+      "后端开发",
+      "Java"
+    ],
+    "hard_negatives": [
+      "外包",
+      "驻场"
+    ],
+    "skills": [
+      "Java",
+      "Spring",
+      "MySQL"
+    ],
+    "years_experience": 4
+  },
+  "meta": {
+    "track": "tech",
+    "role_family": "backend",
+    "transition": false,
+    "career_stage": "experienced",
+    "match_band": "low"
+  },
+  "jd_text": "【Java 后端（外包驻场）】驻客户现场开发，要求：4年 Java/Spring，英语可作为工作语言（读写即可），接受外包模式。",
+  "sample_resume": "【样例简历·合成测试数据，非真实个人经历】\n意向：Java 后端｜4 年经验\n经历：某公司 Java 后端（2022-至今）——Spring + MySQL 业务系统开发。\n技能：Java、Spring、MySQL。\n教育：计算机本科。\n注：画像硬负向含'外包/驻场'，与本 JD 外包驻场定位冲突。",
+  "expected_score": 58,
+  "expected_tier": "C",
+  "tolerance": 6,
+  "key_reasons": [
+    "技术栈命中但外包驻场",
+    "英语要求模糊",
+    "硬负向(外包)命中"
+  ],
+  "difficulty": "edge",
+  "annotator": "human",
+  "annotated_at": "2026-07-28"
+}

@@ -1,0 +1,41 @@
+{
+  "id": "golden_005",
+  "profile": {
+    "direction_anchors": [
+      "全栈开发",
+      "React",
+      "Node.js"
+    ],
+    "hard_negatives": [
+      "纯算法",
+      "运维"
+    ],
+    "skills": [
+      "React",
+      "TypeScript",
+      "Node.js",
+      "Python"
+    ],
+    "years_experience": 3
+  },
+  "meta": {
+    "track": "tech",
+    "role_family": "frontend",
+    "transition": false,
+    "career_stage": "experienced",
+    "match_band": "mid"
+  },
+  "jd_text": "【前端偏全栈工程师】负责中台前端 + 部分 Node 后端。要求：3年以上 React/TypeScript，熟悉 Node.js，有 Python 脚本能力加分。",
+  "sample_resume": "【样例简历·合成测试数据，非真实个人经历】\n意向：前端偏全栈｜3 年经验\n经历：某厂 前端工程师（2023-至今）——中台前端（React/TS）+ 部分 Node 后端；用 Python 写构建脚本。\n技能：React、TypeScript、Node.js、Python。\n教育：软件工程本科。",
+  "expected_score": 80,
+  "expected_tier": "B",
+  "tolerance": 5,
+  "key_reasons": [
+    "React/TS/Node 命中",
+    "Python 加分项命中",
+    "后端占比低（偏前端）"
+  ],
+  "difficulty": "medium",
+  "annotator": "human",
+  "annotated_at": "2026-07-28"
+}

@@ -15,6 +15,7 @@ from post_judge import (
     apply_tech_penalty,
     enforce_distribution,
     post_judge,
+    DEFAULT_CONFIG,
 )
 
 
@@ -63,24 +64,24 @@ class TestApplyEnglishPenalty:
 
     def test_fluent_caps_at_40(self):
         job = self._make_job(92)
-        result = apply_english_penalty(job, "basic", "fluent")
+        result = apply_english_penalty(job, "basic", "fluent", DEFAULT_CONFIG)
         assert result["score"] == 40
         assert result["tier"] == "C"
 
     def test_fluent_no_penalty_for_fluent_candidate(self):
         job = self._make_job(92)
-        result = apply_english_penalty(job, "fluent", "fluent")
+        result = apply_english_penalty(job, "fluent", "fluent", DEFAULT_CONFIG)
         assert result["score"] == 92  # 未变
 
     def test_preferred_penalty_for_basic(self):
         job = self._make_job(85)
-        result = apply_english_penalty(job, "basic", "preferred")
+        result = apply_english_penalty(job, "basic", "preferred", DEFAULT_CONFIG)
         assert result["score"] == 70  # min(85-15, 70) = 70
         assert result["tier"] == "B"
 
     def test_implicit_small_penalty_for_unknown(self):
         job = self._make_job(90)
-        result = apply_english_penalty(job, "unknown", "implicit")
+        result = apply_english_penalty(job, "unknown", "implicit", DEFAULT_CONFIG)
         assert result["score"] == 85  # min(90-5, 85) = 85
 
 
@@ -116,25 +117,25 @@ class TestApplyCoreTeamPenalty:
 
     def test_weak_education_caps_60(self):
         job = self._make_job(95)
-        result = apply_core_team_penalty(job, "weak", True)
+        result = apply_core_team_penalty(job, "weak", True, DEFAULT_CONFIG)
         assert result["score"] == 60
         assert result["tier"] == "C"
 
     def test_medium_education_caps_75(self):
         job = self._make_job(90)
-        result = apply_core_team_penalty(job, "medium", True)
+        result = apply_core_team_penalty(job, "medium", True, DEFAULT_CONFIG)
         assert result["score"] == 75
         assert result["tier"] == "B"
 
     def test_strong_education_no_change(self):
         job = self._make_job(95)
-        result = apply_core_team_penalty(job, "strong", True)
+        result = apply_core_team_penalty(job, "strong", True, DEFAULT_CONFIG)
         assert result["score"] == 95
         assert result["tier"] == "A"
 
     def test_not_core_team_no_change(self):
         job = self._make_job(95)
-        result = apply_core_team_penalty(job, "weak", False)
+        result = apply_core_team_penalty(job, "weak", False, DEFAULT_CONFIG)
         assert result["score"] == 95
 
 
@@ -160,17 +161,17 @@ class TestDetectTechStrong:
 class TestApplyTechPenalty:
     def test_penalty_when_no_tech(self):
         job = {"job_id": "T1", "score": 80, "tier": "A"}
-        result = apply_tech_penalty(job, has_tech=False, is_tech_strong=True)
+        result = apply_tech_penalty(job, has_tech=False, is_tech_strong=True, cfg=DEFAULT_CONFIG)
         assert result["score"] == 70
 
     def test_no_penalty_when_has_tech(self):
         job = {"job_id": "T1", "score": 80, "tier": "A"}
-        result = apply_tech_penalty(job, has_tech=True, is_tech_strong=True)
+        result = apply_tech_penalty(job, has_tech=True, is_tech_strong=True, cfg=DEFAULT_CONFIG)
         assert result["score"] == 80
 
     def test_no_penalty_when_not_tech_strong(self):
         job = {"job_id": "T1", "score": 80, "tier": "A"}
-        result = apply_tech_penalty(job, has_tech=False, is_tech_strong=False)
+        result = apply_tech_penalty(job, has_tech=False, is_tech_strong=False, cfg=DEFAULT_CONFIG)
         assert result["score"] == 80
 
 
@@ -188,7 +189,7 @@ class TestEnforceDistribution:
             {"job_id": f"B{i}", "score": 70 - i, "tier": "B"}
             for i in range(12)
         ]
-        result = enforce_distribution(jobs, max_a_ratio=0.25)
+        result = enforce_distribution(jobs, DEFAULT_CONFIG)
         a_count = sum(1 for j in result if j["tier"] == "A")
         assert a_count == 5  # 8 → 5
 
@@ -198,7 +199,7 @@ class TestEnforceDistribution:
             {"job_id": "J2", "score": 90, "tier": "A"},
             {"job_id": "B1", "score": 70, "tier": "B"},
         ] + [{"job_id": f"C{i}", "score": 50, "tier": "C"} for i in range(17)]
-        result = enforce_distribution(jobs, max_a_ratio=0.25)
+        result = enforce_distribution(jobs, DEFAULT_CONFIG)
         a_count = sum(1 for j in result if j["tier"] == "A")
         assert a_count == 2  # 不变，在 max(3, 5) 范围内
 

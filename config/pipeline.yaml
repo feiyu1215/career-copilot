@@ -1,0 +1,82 @@
+# Career Copilot 管线配置
+# 所有数值型参数均可在此调整，无需修改 Python 代码。
+# CLI 参数（如 --stage1-model）优先于此文件。
+
+# 飞书 ATS 抓取器浏览器上下文 User-Agent（T15：fetch_jobs_feishu.py 从此读取）
+# 缺省时回退到脚本内置默认 UA，不会因缺失而报错。
+user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36"
+
+pipeline:
+  timeout_seconds: 1800
+  checkpoint_dir: ".checkpoint"
+  version: "3.0.0"
+
+stage1:
+  model: "gpt-4o-mini"
+  batch_size: 25
+  max_concurrent: 8
+  truncation_chars: 1500
+  circuit_breaker_threshold: 0.30
+  circuit_min_samples: 5
+
+stage1_5_calibration:
+  model: "gpt-4.1-mini"
+  top_k: 15
+
+stage2:
+  model: "gpt-4.1-mini"
+  group_size: 6
+  truncation_chars: 1800
+  max_concurrent: 4
+  top_score_low: 90
+  top_score_high: 97
+  bottom_cap: 75
+
+stage2_5_rerank:
+  model: "gpt-4.1-mini"
+  layer_threshold: 15
+
+post_judge:
+  # 英语惩罚
+  english_fluent_cap: 40
+  english_preferred_penalty: 15
+  english_preferred_cap: 70
+  english_implicit_basic_penalty: 8
+  english_implicit_basic_cap: 80
+  english_implicit_unknown_penalty: 5
+  english_implicit_unknown_cap: 85
+  # 核心团队
+  core_team_weak_cap: 60
+  core_team_medium_cap: 75
+  # 技术依赖
+  tech_dependency_penalty: 10
+  # 分布约束（A 档比例）已迁移至 config/constraints.yaml → a_tier_cap，
+  # 由 post_judge.py 注入 cfg，此处不再保留，避免与单一事实源漂移。
+
+tiers:
+  A: 85
+  B: 72
+
+output:
+  score_high: 97
+  score_mid_high: 85
+  score_mid: 72
+  score_low: 55
+
+# N5 行为×ATS 拟合（确定性模块 behavior_fit.py）
+# enabled: 是否在 score 上叠加行为拟合微调（默认关，避免扰动现有 tier）
+# weight: 微调幅度系数；score 调整 = (behavior_fit-0.5) * weight * 100（±5 分内）
+behavior_fit:
+  enabled: false
+  weight: 0.10
+
+# Phase 4.3 抓取结果质量守门（门禁阈值；CLI 参数优先于此文件）
+# run_pipeline 中默认「只报告不拦截」（report-only，便于观测趋势）。
+# 要变成真正的 CI 门禁，跑批时加 --quality-gate-fail：
+#   --quality-gate-fail --quality-gate-min-accept-rate 0.8
+#   [可选] --quality-gate-max-warning-rate 0.3 --quality-gate-warnings-fatal
+# 注：权威的「硬过滤」在 batch_fetch 写出 jobs_raw 之前（按完整字段契约拦截废卡）。
+quality_gate:
+  min_accept_rate: 0.5
+  max_warning_rate: null
+  warnings_fatal: false

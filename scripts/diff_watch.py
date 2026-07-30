@@ -32,6 +32,7 @@ from __future__ import annotations
 
 import json
 import sys
+import os
 import argparse
 import asyncio
 from pathlib import Path
@@ -154,9 +155,36 @@ async def run(args):
     current_jobs = parse_jobs_raw(args.current)
     print(f"  岗位数: {len(current_jobs)}")
 
+    # Phase 8.1：本轮快照累积到 trend_store（无论是否有新增岗位都记录，便于趋势分析）
+    trend_store = getattr(args, "trend_store", None)
+    if trend_store:
+        try:
+            from trend_analyzer import build_snapshot, append_snapshot
+            snap = build_snapshot(current_jobs, date_str=getattr(args, "date", None))
+            store = append_snapshot(trend_store, snap)
+            print(f"[trend] 已累积市场快照 {snap['date']}（{snap['total']} 岗，"
+                  f"累计 {len(store['snapshots'])} 轮）→ {trend_store}")
+        except Exception as e:
+            print(f"[trend] 快照累积失败（跳过）: {e}")
+
     # 找差异
     new_jobs = find_new_jobs(baseline_jobs, current_jobs)
     removed_jobs = find_removed_jobs(baseline_jobs, current_jobs)
+
+    # Phase 8.3：记录本轮新增岗位的首次出现时间（first_seen_at）
+    fs_list: list = []
+    if new_jobs and getattr(args, "first_seen_store", None):
+        try:
+            from first_seen import load_store, record_first_seen, save_store
+            fs_store = load_store(args.first_seen_store)
+            fs_store, fs_map = record_first_seen(fs_store, new_jobs)
+            save_store(args.first_seen_store, fs_store)
+            for j in new_jobs:
+                j["first_seen_at"] = fs_map.get(j["job_id"], datetime.now().isoformat())
+            fs_list = [j.get("first_seen_at") for j in new_jobs]
+            print(f"[first_seen] 已记录 {len(fs_list)} 个新增岗位首见时间 → {args.first_seen_store}")
+        except Exception as e:
+            print(f"[first_seen] 记录失败（跳过）: {e}")
 
     print(f"\n差异分析:")
     print(f"  新增岗位: {len(new_jobs)}")
@@ -212,8 +240,16 @@ async def run(args):
         stage2_model = args.stage2_model
         concurrency = 5
         provider = getattr(args, 'provider', None)
+        suppress_summary_notify = True  # B2：避免 run_pipeline 内汇总推送与下方 A 档推送重复
 
     score_results = await run_pipeline(ScoreArgs())
+
+    # Phase 8.3：将首见时间按 job 顺序注入 scored 条目（temp jobs_raw 编号与 new_jobs 一致）
+    if fs_list:
+        for tier_items in (score_results.get("recommendations") or {}).values():
+            for idx, it in enumerate(tier_items):
+                if idx < len(fs_list) and fs_list[idx]:
+                    it["first_seen_at"] = fs_list[idx]
 
     # 清理临时文件
     temp_jobs_path.unlink(missing_ok=True)
@@ -230,6 +266,11 @@ async def run(args):
         "removed_titles": [j["title"] for j in removed_jobs[:20]],
         "new_jobs_scored": score_results.get("recommendations", {}),
         "new_jobs_summary": score_results.get("summary", {}),
+        "new_jobs": [
+            {"job_id": j.get("job_id", ""), "title": j.get("title", ""),
+             "first_seen_at": j.get("first_seen_at")}
+            for j in new_jobs
+        ],
     }
 
     # 保存结果
@@ -275,6 +316,17 @@ async def run(args):
         for j in a_jobs:
             print(f"    ★ [{j.get('score', 0):.0f}] {j.get('title', '?')}")
 
+    # B2 企业微信推送（仅在出现 A 档新岗时；webhook 空则跳过）
+    wh = args.wecom or os.environ.get("WECOM_WEBHOOK")
+    if wh and tier_a_new > 0:
+        try:
+            from notify_wecom import notify
+            a_titles = "\n".join(
+                f"- {j.get('title', '?')}" for j in score_results.get("recommendations", {}).get("tier_A", [])[:5])
+            notify("diff_watch", f"新增 {len(new_jobs)} 岗，A 档 {tier_a_new}：\n{a_titles}", wh)
+        except Exception:
+            pass
+
     return output
 
 
@@ -286,9 +338,15 @@ def main():
     parser.add_argument("--summary", required=True, help="candidate_summary.txt 路径")
     parser.add_argument("--output", required=True, help="输出 watch_results.json 路径")
     parser.add_argument("--history", default=None, help="累计历史记录 JSON 路径（可选）")
+    parser.add_argument("--trend-store", dest="trend_store", default=None,
+                        help="Phase 8.1 市场趋势快照库 trend_store.json 路径（可选）")
+    parser.add_argument("--first-seen-store", dest="first_seen_store", default=None,
+                        help="Phase 8.3 first_seen store 路径（可选，记录新增岗位首见时间）")
+    parser.add_argument("--date", default=None, help="快照日期 YYYY-MM-DD（默认今天）")
     parser.add_argument("--stage1-model", default="gpt-4o-mini", help="Stage 1 模型")
     parser.add_argument("--stage2-model", default="gpt-4.1-mini", help="Stage 2 模型")
-    parser.add_argument("--provider", default=None, help="LLM provider: internal 或 external（默认读环境变量 LLM_PROVIDER）")
+    parser.add_argument("--provider", default=None, help="LLM provider: friday 或 sub2api（默认读环境变量 LLM_PROVIDER）")
+    parser.add_argument("--wecom", default=None, help="企业微信群机器人 key（B2）；缺省读 WECOM_WEBHOOK；空则跳过")
     args = parser.parse_args()
     asyncio.run(run(args))
 

@@ -18,8 +18,39 @@ post_judge.py — 确定性后处理模块
 from __future__ import annotations
 
 import re
+import sys
 import json
 from typing import Optional
+from pathlib import Path
+
+# 关键约束以 config/constraints.yaml 为单一事实源（见 scripts/config_loader.py）
+_SCRIPTS_DIR = Path(__file__).resolve().parent
+if str(_SCRIPTS_DIR) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS_DIR))
+from config_loader import load_constraints
+
+
+# ============================================================
+# 可配置参数（默认值 = 当前硬编码行为，可通过 pipeline.yaml 覆盖）
+# ============================================================
+
+DEFAULT_CONFIG = {
+    # 英语惩罚
+    "english_fluent_cap": 40,          # JD要求fluent + 候选人非fluent → 封顶
+    "english_preferred_penalty": 15,   # JD偏好英语 + 候选人basic/unknown → 降分
+    "english_preferred_cap": 70,       # 同上 → 封顶
+    "english_implicit_basic_penalty": 8,   # 隐含信号 + basic → 降分
+    "english_implicit_basic_cap": 80,      # 同上 → 封顶
+    "english_implicit_unknown_penalty": 5, # 隐含信号 + unknown → 降分
+    "english_implicit_unknown_cap": 85,    # 同上 → 封顶
+    # 核心团队
+    "core_team_weak_cap": 60,          # 核心团队 + weak学历 → 封顶
+    "core_team_medium_cap": 75,        # 核心团队 + medium学历 → 封顶
+    # 技术依赖
+    "tech_dependency_penalty": 10,     # JD强调技术 + 候选人无技术背景 → 降分
+    # 分布约束（A 档比例）已迁移至 config/constraints.yaml → a_tier_cap，
+    # 由 post_judge() 注入 cfg，此处不再保留，避免与 verify_output / pipeline.yaml 漂移。
+}
 
 
 # ============================================================
@@ -70,32 +101,39 @@ def detect_english_requirement(jd_text: str) -> Optional[str]:
 
 
 def apply_english_penalty(job: dict, candidate_english: str,
-                          jd_english_req: str) -> dict:
+                          jd_english_req: str, cfg: dict) -> dict:
     """根据英语匹配情况调整分数
 
     规则（参考 v1 的 must-hit rules）：
-    - JD要求fluent + 候选人非fluent → 封顶 40
-    - JD要求preferred + 候选人basic/unknown → 降 15 分，封顶 70
-    - JD有implicit信号 + 候选人unknown → 降 5 分，封顶 85
+    - JD要求fluent + 候选人非fluent → 封顶
+    - JD要求preferred + 候选人basic/unknown → 降分且封顶
+    - JD有implicit信号 + 候选人basic/unknown → 降分且封顶
     """
     score = job["score"]
     penalties = []
 
     if jd_english_req == "fluent":
         if candidate_english not in ("fluent",):
-            score = min(score, 40)
-            penalties.append(f"英语硬门槛: JD要求流利英语, 候选人{candidate_english}, 封顶40")
+            cap = cfg["english_fluent_cap"]
+            score = min(score, cap)
+            penalties.append(f"英语硬门槛: JD要求流利英语, 候选人{candidate_english}, 封顶{cap}")
     elif jd_english_req == "preferred":
         if candidate_english in ("basic", "unknown"):
-            score = min(score - 15, 70)
-            penalties.append(f"英语偏好: JD偏好英语, 候选人{candidate_english}, -15且封顶70")
+            penalty = cfg["english_preferred_penalty"]
+            cap = cfg["english_preferred_cap"]
+            score = min(score - penalty, cap)
+            penalties.append(f"英语偏好: JD偏好英语, 候选人{candidate_english}, -{penalty}且封顶{cap}")
     elif jd_english_req == "implicit":
         if candidate_english == "basic":
-            score = min(score - 8, 80)
-            penalties.append(f"隐含英语: JD有国际化信号(TikTok/海外等), 候选人英语basic, -8且封顶80")
+            penalty = cfg["english_implicit_basic_penalty"]
+            cap = cfg["english_implicit_basic_cap"]
+            score = min(score - penalty, cap)
+            penalties.append(f"隐含英语: JD有国际化信号(TikTok/海外等), 候选人英语basic, -{penalty}且封顶{cap}")
         elif candidate_english == "unknown":
-            score = min(score - 5, 85)
-            penalties.append(f"隐含英语: JD有国际化信号(TikTok/海外等), 候选人无英语证据, -5且封顶85")
+            penalty = cfg["english_implicit_unknown_penalty"]
+            cap = cfg["english_implicit_unknown_cap"]
+            score = min(score - penalty, cap)
+            penalties.append(f"隐含英语: JD有国际化信号(TikTok/海外等), 候选人无英语证据, -{penalty}且封顶{cap}")
 
     if penalties:
         job = {**job, "score": max(score, 0)}
@@ -140,12 +178,12 @@ def detect_core_team(jd_text: str, profile: dict | None = None) -> bool:
 
 
 def apply_core_team_penalty(job: dict, education_tier: str,
-                            is_core_team: bool) -> dict:
+                            is_core_team: bool, cfg: dict) -> dict:
     """核心团队 + 学历不匹配时降级
 
     规则（对齐 v1/v2 step_b_core.py）：
-    - 核心团队 + weak学历 → 封顶 60，降到 C 档
-    - 核心团队 + medium学历 → 封顶 75，A档降到 B 档
+    - 核心团队 + weak学历 → 封顶，降到 C 档
+    - 核心团队 + medium学历 → 封顶，A档降到 B 档
     - 核心团队 + strong学历 → 不降
     """
     if not is_core_team:
@@ -155,12 +193,14 @@ def apply_core_team_penalty(job: dict, education_tier: str,
     penalties = []
 
     if education_tier == "weak":
-        score = min(score, 60)
-        penalties.append(f"核心团队+weak学历: 封顶60, 降C档")
+        cap = cfg["core_team_weak_cap"]
+        score = min(score, cap)
+        penalties.append(f"核心团队+weak学历: 封顶{cap}, 降C档")
         job = {**job, "tier": "C"}
     elif education_tier == "medium":
-        score = min(score, 75)
-        penalties.append(f"核心团队+medium学历: 封顶75")
+        cap = cfg["core_team_medium_cap"]
+        score = min(score, cap)
+        penalties.append(f"核心团队+medium学历: 封顶{cap}")
         if job["tier"] == "A":
             job = {**job, "tier": "B"}
     # strong: 不降
@@ -192,18 +232,20 @@ def detect_tech_strong(jd_text: str) -> bool:
     return False
 
 
-def apply_tech_penalty(job: dict, has_tech: bool, is_tech_strong: bool) -> dict:
-    """JD 强依赖技术但候选人无技术背景 → 降 10 分
+def apply_tech_penalty(job: dict, has_tech: bool, is_tech_strong: bool,
+                       cfg: dict) -> dict:
+    """JD 强依赖技术但候选人无技术背景 → 降分
 
-    规则（参考 v1 sort_score: tech_strong × -10）
+    规则（参考 v1 sort_score: tech_strong × -N）
     """
     if not is_tech_strong or has_tech:
         return job
 
-    score = job["score"] - 10
+    penalty = cfg["tech_dependency_penalty"]
+    score = job["score"] - penalty
     job = {**job, "score": max(score, 0)}
     job.setdefault("post_penalties", [])
-    job["post_penalties"].append("技术依赖: JD强调技术能力, 候选人无明确技术背景, -10")
+    job["post_penalties"].append(f"技术依赖: JD强调技术能力, 候选人无明确技术背景, -{penalty}")
     return job
 
 
@@ -211,14 +253,18 @@ def apply_tech_penalty(job: dict, has_tech: bool, is_tech_strong: bool) -> dict:
 # 分布检查 & 强制降档
 # ============================================================
 
-def enforce_distribution(jobs: list[dict], max_a_ratio: float = 0.25) -> list[dict]:
+def enforce_distribution(jobs: list[dict], cfg: Optional[dict] = None) -> list[dict]:
     """强制 A 档比例不超过阈值
 
     如果 A 档占比超过 max_a_ratio，将分数最低的 A 档岗位降为 B 档。
-    这是代码层面的硬约束，确保推荐质量。
+    这是代码层面的硬约束，确保推荐质量。A 档比例以 config/constraints.yaml
+    → a_tier_cap 为单一事实源（不依赖调用方传入，避免漂移）。
     """
+    a_cap = load_constraints()["a_tier_cap"]
+    max_a_ratio = a_cap["max_ratio"]
+    min_floor = a_cap["min_floor"]
     tier_a = [j for j in jobs if j["tier"] == "A"]
-    max_a_count = max(3, int(len(jobs) * max_a_ratio))
+    max_a_count = max(min_floor, int(len(jobs) * max_a_ratio))
 
     if len(tier_a) <= max_a_count:
         return jobs
@@ -244,16 +290,25 @@ def enforce_distribution(jobs: list[dict], max_a_ratio: float = 0.25) -> list[di
 # 主函数
 # ============================================================
 
-def post_judge(analyzed_jobs: list[dict], profile: dict) -> list[dict]:
+def post_judge(analyzed_jobs: list[dict], profile: dict,
+               config: dict | None = None) -> list[dict]:
     """对 Stage 2 输出做确定性后处理
 
     Args:
         analyzed_jobs: Stage 2 的输出列表
         profile: boundary_profile.json 的内容
+        config: 可选配置覆盖（来自 pipeline.yaml 的 post_judge 段）
 
     Returns:
         修正后的岗位列表（增加了 post_penalties 字段）
     """
+    # 合并配置：DEFAULT_CONFIG ← 外部覆盖（pipeline.yaml 的 post_judge 段）
+    cfg = {**DEFAULT_CONFIG}
+    if config:
+        cfg.update(config)
+    # 注：A 档比例约束由 enforce_distribution 直接从 config/constraints.yaml
+    # （a_tier_cap）读取，作为单一事实源；此处无需注入，避免重复定义。
+
     # 提取候选人信息
     eng_info = profile.get("english_evidence", {})
     candidate_english = eng_info.get("level", "unknown")
@@ -285,24 +340,24 @@ def post_judge(analyzed_jobs: list[dict], profile: dict) -> list[dict]:
         eng_req = detect_english_requirement(jd_text)
         if eng_req:
             job["english_requirement"] = eng_req  # 写入结构化字段供报告渲染
-            job = apply_english_penalty(job, candidate_english, eng_req)
+            job = apply_english_penalty(job, candidate_english, eng_req, cfg)
 
         # Rule 2: 核心团队 + 学历
         is_core = detect_core_team(jd_text, profile)
         if is_core:
             job["is_core_team"] = True  # 写入结构化字段供报告渲染
-            job = apply_core_team_penalty(job, education_tier, is_core)
+            job = apply_core_team_penalty(job, education_tier, is_core, cfg)
 
         # Rule 3: 技术依赖
         is_tech_strong = detect_tech_strong(jd_text)
         if is_tech_strong:
             job["is_tech_strong"] = True  # 写入结构化字段供报告渲染
-            job = apply_tech_penalty(job, has_tech, is_tech_strong)
+            job = apply_tech_penalty(job, has_tech, is_tech_strong, cfg)
 
         results.append(job)
 
     # Rule 4: 分布约束
-    results = enforce_distribution(results)
+    results = enforce_distribution(results, cfg)
 
     # 重新排序
     tier_order = {"A": 0, "B": 1, "C": 2}

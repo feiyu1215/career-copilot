@@ -1,0 +1,52 @@
+[project]
+name = "career-copilot"
+version = "3.0.0"
+requires-python = ">=3.12"
+# 依赖版本取自当前已验证可跑（530 passed / 0 failed / 0 skipped）的 venv 精确快照，
+# 以保证 `uv sync` 可复现、零漂移。运行时/测试依赖为硬依赖；视觉巡检后端为可选 extra。
+dependencies = [
+    "openai==2.46.0",          # LLM 调用（scripts/llm_client.py）
+    "pypdf==6.14.2",           # PDF 简历解析
+    "pyyaml==6.0.3",           # Pipeline 配置化
+    "scipy==1.18.0",           # 评估指标（Spearman ρ 等）
+    "numpy==2.5.1",            # 评估/数值计算
+    "requests==2.34.2",        # 网络抓取
+    "python-docx==1.2.0",      # Word 简历输出
+    "tiktoken==0.13.0",        # LLM tokenizer
+    "tqdm==4.69.0",            # 进度条
+    "regex==2026.7.19",        # 高级正则
+    "lxml==6.1.1",             # HTML/XML 解析
+    "playwright==1.61.0",      # 飞书 ATS 抓取（需另行 `playwright install chromium`）
+    "pytest==9.1.1",           # 测试
+]
+
+[project.optional-dependencies]
+# 视觉巡检可选后端：抽 PDF 文本块坐标，检测孤行/溢出/留白（确定性、不调用外部 LLM）。
+# 未安装时 build_cv 会优雅降级为提示、不影响评分管线。标准复现命令：uv sync --all-extras
+visual = ["pymupdf==1.28.0"]
+
+[tool.mypy]
+python_version = "3.9"
+ignore_missing_imports = true
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
+check_untyped_defs = true
+
+# 核心文件强制类型标注
+[[tool.mypy.overrides]]
+module = "scripts.smart_score"
+disallow_untyped_defs = true
+
+[[tool.mypy.overrides]]
+module = "scripts.llm_client"
+disallow_untyped_defs = true
+
+[tool.ruff]
+target-version = "py39"
+line-length = 100
+select = ["E", "F", "W", "I"]
+ignore = ["E501"]  # 行长度暂不强制
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

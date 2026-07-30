@@ -24,7 +24,7 @@ career-copilot 解决了一个真实且高频的痛点：技术人员求职时�
 
 需求信号强：触发词覆盖了 26+ 种用户表述（从"帮我匹配岗位"到"面试紧张"），说明需求多样且真实。多个用户场景（冷启动、单 JD 评估、全流程 pipeline）都有明确路由。
 
-扣 3 分：依赖外部 LLM Provider（internal/external），增加了使用门槛；部分功能（fetch_jobs.py 的 catdesk-browser 依赖）限制了独立部署。
+扣 3 分：依赖外部 LLM Provider（friday/sub2api），增加了使用门槛；部分功能（fetch_jobs.py 的 catdesk-browser 依赖）限制了独立部署。
 
 ### Runtime Cost (11/15)
 
@@ -85,7 +85,7 @@ SKILL.md 做到了：用 120 行覆盖红线、思考框架、意图路由、匹
 
 3. **错误诊断指导不够具体**：对 timeout、JSONDecodeError、AuthError 等不同错误类型缺乏分类诊断表和对应排查步骤，依赖 Agent 通用推理能力。
 
-4. **外部依赖较重**：依赖 LLM Provider（internal/external）、catdesk-browser、pypdf 等，新用户 onboarding 有一定门槛（虽然 requirements.txt + check_env.py 已缓解）。
+4. **外部依赖较重**：依赖 LLM Provider（friday/sub2api）、catdesk-browser、pypdf 等，新用户 onboarding 有一定门槛（虽然 requirements.txt + check_env.py 已缓解）。
 
 ---
 

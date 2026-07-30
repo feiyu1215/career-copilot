@@ -1,0 +1,62 @@
+# 多门户抓取注册表（enabled 开关约定）
+#
+# 每个 portal：
+#   enabled   : 是否参与多门户编排（关掉不删脚本，仅跳过）
+#   backend   : 对应的抓取脚本 / 后端类型
+#   kind      : catdesk | boss | feishu | linkedin | shixiseng | nowcoder | websearch
+#   cli       : 外部 CLI 命令（linkedin 用；缺省按 bun cli.ts 风格）
+#   note      : 备注
+#
+# 国外门户（Indeed/Glassdoor/各国 board）暂不启用——架构已可扩展，
+# 需要时新增一项并写对应 fetch_jobs_<x>.py 即可。
+
+portals:
+  boss:
+    enabled: true
+    rate_limit: "30 req/min"   # Phase 7.2：主动节流（与 --delay 叠加，封顶 30 请求/分）
+    kind: boss
+    backend: scripts/fetch_boss.py
+    note: 国内主流；boss-cli 首选 + bsk 降级（已验证）
+
+  catdesk:
+    enabled: true
+    rate_limit: "20 req/min"   # Phase 7.2：主动节流（与 --delay 叠加，封顶 20 请求/分）
+    kind: catdesk
+    backend: scripts/fetch_jobs.py
+    note: 字节/美团/阿里/通用预设；catdesk-browser 路线
+
+  feishu:
+    enabled: false
+    rate_limit: "10 req/min"   # Phase 7.2：主动节流（fetch_jobs_feishu 启用时接入）
+    kind: feishu
+    backend: scripts/fetch_jobs_feishu.py
+    note: 飞书 ATS 站点（需 Playwright + 登录态）
+
+  linkedin:
+    enabled: true
+    rate_limit: "10 req/min"   # Phase 7.2：主动节流
+    kind: linkedin
+    backend: scripts/fetch_jobs_linkedin.py
+    cli: linkedin-search          # 外部 CLI（bun cli.ts 风格）；缺失则走 WebSearch 兜底
+    note: 外企/国际化；外部 CLI 优先，WebSearch 兜底
+
+  shixiseng:
+    enabled: true
+    rate_limit: "15 req/min"   # Phase 7.2：主动节流
+    kind: shixiseng
+    backend: scripts/fetch_jobs_shixiseng.py
+    note: 实习僧（实习岗）；requests 型，Phase 4.2 已启用 + 字段加固（启发式选择器，待本地微调）
+
+  # 牛客网（校招/社招）：requests 型，React SPA 壳页为主，启发式选择器
+  # —— Phase 4.2 新增来源；默认关闭，启用前请本地联网验证选择器（待本地微调）
+  nowcoder:
+    enabled: false
+    rate_limit: "15 req/min"   # Phase 7.2：主动节流
+    kind: nowcoder
+    backend: scripts/fetch_jobs_nowcoder.py
+
+# 通用兜底：无专属后端的门户一律走 WebSearch（同构 WebSearch 路线）
+websearch_fallback:
+  enabled: true
+  kind: websearch
+  note: 未启用专属后端时，由 agent 用 WebSearch+WebFetch 兜底

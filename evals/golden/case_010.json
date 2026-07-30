@@ -1,0 +1,49 @@
+{
+  "id": "golden_010",
+  "meta": {
+    "track": "tech",
+    "role_family": "algorithm",
+    "transition": false,
+    "career_stage": "campus",
+    "match_band": "high"
+  },
+  "profile": {
+    "direction_anchors": [
+      "机器学习",
+      "深度学习",
+      "Python",
+      "PyTorch",
+      "数据挖掘"
+    ],
+    "hard_negatives": [
+      "3 年以上经验",
+      "管理岗",
+      "纯业务运营"
+    ],
+    "skills": [
+      "Python",
+      "PyTorch",
+      "XGBoost",
+      "NLP",
+      "Kaggle 竞赛",
+      "论文复现"
+    ],
+    "years_experience": 0
+  },
+  "jd_title": "算法工程师（校招）",
+  "jd_department": "",
+  "jd_location": "",
+  "jd_text": "【算法工程师（校招）】职责：参与机器学习/深度学习模型研发，支撑推荐/搜索/NLP 等业务；做特征与实验。要求：硕士及以上应届；扎实的机器学习/深度学习基础；熟练 Python；有项目/竞赛/实习经历；熟悉 PyTorch；有论文或开源贡献优先。",
+  "sample_resume": "【样例简历·合成测试数据，非真实个人经历】\n意向：算法工程师（校招）｜应届硕士\n经历：在校——机器学习/深度学习项目（PyTorch）；Kaggle 竞赛；论文复现；XGBoost/NLP 实践。\n技能：Python、PyTorch、XGBoost、NLP、Kaggle 竞赛、论文复现。\n教育：硕士（ML 方向）。",
+  "expected_score": 85,
+  "expected_tier": "A",
+  "tolerance": 5,
+  "key_reasons": [
+    "机器学习/深度学习/Python/PyTorch 全部命中，Kaggle 竞赛与论文复现命中优先项",
+    "应届身份与校招 JD 完全匹配，NLP/数据挖掘拓宽覆盖面",
+    "无硬负向命中（非 3 年+/管理）"
+  ],
+  "difficulty": "medium",
+  "annotator": "human",
+  "annotated_at": "2026-07-28"
+}

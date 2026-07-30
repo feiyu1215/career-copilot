@@ -1,0 +1,39 @@
+{
+  "id": "golden_003",
+  "profile": {
+    "direction_anchors": [
+      "后端开发",
+      "Python"
+    ],
+    "hard_negatives": [
+      "算法研究",
+      "前端"
+    ],
+    "skills": [
+      "Python",
+      "SQL",
+      "Linux"
+    ],
+    "years_experience": 2
+  },
+  "meta": {
+    "track": "tech",
+    "role_family": "data",
+    "transition": false,
+    "career_stage": "experienced",
+    "match_band": "mid"
+  },
+  "jd_text": "【数据平台工程师】负责离线数据管道与 ETL 开发。要求：2年以上经验，熟悉 Python/SQL，了解 Hadoop/Spark 生态，有数据仓库建模经验优先。",
+  "sample_resume": "【样例简历·合成测试数据，非真实个人经历】\n意向：后端/数据工程｜2 年经验\n经历：某初创公司 后端开发（2024-至今）——用 Python 写业务接口与脚本，维护 MySQL；兼做简单数据清洗（Python/SQL）。\n技能：Python、SQL、Linux。\n教育：软件工程本科。\n注：偏后端，数据工程经验较浅。",
+  "expected_score": 70,
+  "expected_tier": "C",
+  "tolerance": 6,
+  "key_reasons": [
+    "Python/SQL 命中但偏数据工程",
+    "年限刚好",
+    "方向擦边（后端 vs 数据平台）"
+  ],
+  "difficulty": "hard",
+  "annotator": "human",
+  "annotated_at": "2026-07-28"
+}

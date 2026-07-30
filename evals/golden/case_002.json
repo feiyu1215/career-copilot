@@ -1,0 +1,44 @@
+{
+  "id": "golden_002",
+  "profile": {
+    "direction_anchors": [
+      "后端开发",
+      "Python",
+      "分布式系统"
+    ],
+    "hard_negatives": [
+      "纯前端",
+      "销售",
+      "实习"
+    ],
+    "skills": [
+      "Python",
+      "Go",
+      "MySQL",
+      "Redis",
+      "Kubernetes",
+      "gRPC"
+    ],
+    "years_experience": 5
+  },
+  "meta": {
+    "track": "tech",
+    "role_family": "backend",
+    "transition": false,
+    "career_stage": "experienced",
+    "match_band": "high"
+  },
+  "jd_text": "【高级后端工程师】负责高并发交易系统设计与开发。要求：5年以上 Python/Go 经验，精通分布式系统、MySQL、Redis、Kubernetes，有 gRPC 微服务经验优先。",
+  "sample_resume": "【样例简历·合成测试数据，非真实个人经历】\n意向：高级后端工程师｜5 年经验\n经历：某互联网公司 高级后端工程师（2020-至今）——高并发交易系统设计与开发，主导微服务拆分与 gRPC 服务治理；精通 Python/Go、分布式系统、MySQL、Redis、Kubernetes。\n技能：Python、Go、MySQL、Redis、Kubernetes、gRPC。\n教育：计算机本科。",
+  "expected_score": 92,
+  "expected_tier": "A",
+  "tolerance": 5,
+  "key_reasons": [
+    "技术栈几乎完全命中",
+    "年限超额满足",
+    "核心交易团队"
+  ],
+  "difficulty": "easy",
+  "annotator": "human",
+  "annotated_at": "2026-07-28"
+}

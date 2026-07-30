@@ -126,6 +126,10 @@ PROFILE_SYSTEM_PROMPT = """你是一位资深人力资源专家和行业分析�
     "容易被混淆的角色类型（2-4个）",
     "说明：XX（侧重YY，而非候选人的ZZ）"
   ],
+  "core_team_signals": [
+    "候选人简历中真实参与过的核心团队/战略级项目/核心产品线关键词（如候选人做过的核心产品名）",
+    "说明：这些词用于 post_judge 检测 JD 是否指向核心团队并据学历做降级；只填简历中真实出现过的，无则返回 []"
+  ],
   "english_evidence": {
     "level": "fluent/preferred/basic/unknown",
     "signals": ["从简历中找到的英语能力证据列表"],
@@ -180,6 +184,12 @@ tier 由"本科+研究生"组合决定，规则如下：
 - 暨南大学、华南师范大学等属于 211 但非 985
 - 海外 Top 30 ≈ 985，Top 30-100 ≈ 211，其余按双非处理
 - 核心逻辑：**研究生比本科权重更高**，985硕可以弥补本科短板
+
+## core_team_signals 规则
+
+- 这是候选人在简历中**真实参与过的**核心团队 / 战略级项目 / 核心产品线的关键词（如候选人做过的核心产品名）。
+- 用途：post_judge 检测 JD 是否指向「核心团队」，若命中且候选人学历不足则降级（核心团队更看重学历/出身）。
+- 只填简历中真实出现过的信号词，不要编造目标公司产品；若简历无相关信号，返回空数组 []。
 
 ## 关键原则
 
@@ -325,7 +335,7 @@ def main():
     parser.add_argument("--resume", required=True, help="简历文件路径 (.pdf 或 .txt)")
     parser.add_argument("--output-dir", required=True, help="输出目录")
     parser.add_argument("--model", default="gpt-4.1", help="使用的模型（默认 gpt-4.1）")
-    parser.add_argument("--provider", default=None, help="LLM provider (internal/external)")
+    parser.add_argument("--provider", default=None, help="LLM provider (friday/sub2api)")
     args = parser.parse_args()
     asyncio.run(run(args))
 

@@ -1,0 +1,49 @@
+{
+  "id": "golden_006",
+  "meta": {
+    "track": "tech",
+    "role_family": "algorithm",
+    "transition": false,
+    "career_stage": "experienced",
+    "match_band": "mid"
+  },
+  "profile": {
+    "direction_anchors": [
+      "推荐算法",
+      "排序模型",
+      "特征工程",
+      "AB 实验",
+      "Python",
+      "PyTorch"
+    ],
+    "hard_negatives": [
+      "纯前端开发",
+      "纯运维/SRE"
+    ],
+    "skills": [
+      "Python",
+      "PyTorch",
+      "TensorFlow",
+      "DeepFM",
+      "特征平台",
+      "AB 实验"
+    ],
+    "years_experience": 3
+  },
+  "jd_title": "推荐算法工程师（高级）",
+  "jd_department": "",
+  "jd_location": "",
+  "jd_text": "【推荐算法工程师（高级）】职责：负责信息流/电商推荐系统的排序模型与召回策略迭代；深入特征工程、样本构造与 AB 实验；优化 CTR/CVR 与长周期留存。要求：硕士及以上，3 年以上推荐/广告算法经验；精通 Python，熟悉 PyTorch/TF；掌握大规模特征与排序模型（DeepFM/DLRM/多目标）；有完整 AB 实验与线上收益归因经验；熟悉实时特征与向量召回者优先。",
+  "sample_resume": "【样例简历·合成测试数据，非真实个人经历】\n意向：推荐算法工程师｜3 年经验\n经历：某电商 算法工程师（2023-至今）——信息流推荐排序模型（DeepFM/多目标）与召回策略迭代；特征工程、样本构造与 AB 实验；优化 CTR/CVR 与长周期留存。\n技能：Python、PyTorch、TensorFlow、DeepFM、特征平台、AB 实验。\n教育：硕士（推荐/ML 方向）。\n注：实时特征与向量召回为优先项，画像未体现。",
+  "expected_score": 78,
+  "expected_tier": "B",
+  "tolerance": 5,
+  "key_reasons": [
+    "推荐算法/排序模型/特征工程/AB 实验/Python/PyTorch 全部命中",
+    "学历与年限临界、实时特征/向量召回为优先项未体现",
+    "无硬负向命中（非纯前端/运维）"
+  ],
+  "difficulty": "medium",
+  "annotator": "human",
+  "annotated_at": "2026-07-28"
+}

@@ -1,0 +1,52 @@
+# config/constraints.yaml
+# ---------------------------------------------------------------------------
+# 单一事实源：skill 的关键确定性约束（契约 C4 / C9）。
+#
+# 代码（scripts/verify_output.py、scripts/post_judge.py、scripts/verify_ats.py）、测试
+# （tests/test_a_cap_consistency.py）与文档（FILE_GUIDE.md）都引用本文件，
+# 避免「A 档比例 → 25%」「C9 降级为 WARNING」等约束在多处硬编码后漂移。
+#
+# 修改任一约束只需改此处；运行前确保已 `pip install pyyaml`
+# （项目 requirements.txt 已含；本沙箱受限环境需独立 Python 装好 pyyaml）。
+# ---------------------------------------------------------------------------
+
+# C4 — A 档数量约束
+# verify_output 与 post_judge.enforce_distribution 都以此为准。
+a_tier_cap:
+  max_ratio: 0.25        # A 档最多占总岗位比例
+  min_floor: 3           # 上限保底值：max(min_floor, int(total * max_ratio))
+
+# C9 — Post-Judge 实际生效检查
+# 干净批次（JD 无英语/核心团队/技术信号）本就 0 penalties，属正常结果，
+# 原逻辑 penalties==0 且大批量直接判 FAILURE 会误杀（false positive），故降级。
+post_judge_check:
+  min_items_for_check: 20        # 仅当岗位数 > 此值时才评估 penalties==0
+  zero_penalty_mode: warning     # penalties==0 且大批量时的处置：warning | failure
+
+# ATS — 简历 PDF 文本层与硬性不变量（verify_ats.py 单一事实源）
+# Tier2「精投模式」生成 LaTeX CV 后的出厂校验。修改任一约束只需改此处。
+ats:
+  page_count: 2              # 期望页数（CV 严格 2 页）
+  require_contact: true      # 必须含可识别邮箱+电话（字面文本，非仅图标）
+  forbid_garbled: true       # 文本层不得含 (cid 乱码 / 替换符
+  keyword_coverage: warning  # 关键词缺失处置：warning（advisory，不硬失败）
+
+  # 模板级页数（及可选 ATS）覆盖：build_cv._resolve_constraints 按模板名合并。
+  # 全局 page_count=2 对所有模板生效，此处仅给「非 2 页」模板显式覆盖，
+  # 避免 cn-compact（1 页）编译后被误报 [A1]。
+  templates:
+    cn-professional: {page_count: 2}
+    cn-compact: {page_count: 1}
+    en-single-col: {page_count: 2}
+
+# VISUAL — 编译后坐标级视觉巡检阈值（visual_inspect.inspect_pdf，需 PyMuPDF）
+# 纯启发式、本地确定性、不调用任何视觉 LLM（数据不外发）。
+visual:
+  orphan_bottom_ratio: 0.85     # 文本块底边超过页高此比例且为页末 → 疑似孤行标题
+  blank_gap_ratio: 0.22         # 同页两文本块垂直间隙超过页高此比例 → 异常空白
+  margin_tolerance_pt: 5        # 文本块超出页边距的容差（pt）
+
+# RELEVANCE — 超页时按相关性而非时间裁页（relevance_trim.trim_draft_by_relevance）
+relevance:
+  chars_per_page: 3000          # 估算每页可见字符（用于页数预算）
+  page_limit_default: 2         # 默认页数预算

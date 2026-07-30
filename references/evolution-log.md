@@ -2,16 +2,28 @@
 
 > 加载时机：当 skill-evolution-manager 更新 Skill 时参考，或需要查阅历史决策时。
 
+## T1-T15 升级 + Prompt 参数化（2026-07-23）
+
+基于升级计划（T1-T7, T10-T12 主计划 + T8, T9, T13-T15 补充计划）的全面升级。核心改动：
+- **Prompt 外部化**（T8）：所有 LLM prompt 模板迁移至 `config/prompts.yaml`，`_DEFAULT_PROMPTS` 内联兜底。分数带参数（97/72/90-97/75 等）从硬编码改为 `{placeholder}`，由 `config/pipeline.yaml` 的 `PIPELINE_CFG` 在调用时注入
+- **配置外部化**（T8）：`config/pipeline.yaml` 管理全部数值参数（模型/并发/分数带/熔断阈值/后处理惩罚），`load_config()` 代码默认值兜底
+- **熔断器修复**：Stage 1 熔断判断从 `failed/total`（全量失败率）改为 `failed/processed`（已处理样本失败率），修复小批量失败被大分母稀释的 bug
+- **Provider Failover**（T13）：`llm_client.py` 新增 `FAILOVER_CHAIN` + 冷却机制，主 Provider 重试耗尽后自动沿链路切换
+- **post_judge 配置化**（T14）：所有惩罚阈值集中到 `DEFAULT_CONFIG`，`post_judge()` 接受 `config` 参数，与 `pipeline.yaml` 对齐
+- **评测框架**（T11/T12）：回归对比（MAE/Cohen κ）+ 交叉验证（Fleiss κ）门禁
+- **Golden Cases**（T10）：`evals/golden/` 准确度评估框架（1 个人工标注 + 4 个 AI 草稿，目标 20 个）
+- 测试从 129 → **200 passed**
+- SKILL.md token 上限从 10000 调至 12000
+
 ## 最近一次结构性改动（2025-05-25）
 
-基于 easyslides skill 架构审视，引入约束分级体系和执行边界。SKILL.md 当前 ~182 行。核心改动：
+引入约束分级体系和执行边界。SKILL.md 当前 ~182 行。核心改动：
 - 新增**约束分级声明**（HARD > REQUIRED > RECOMMENDED > RELAXABLE），所有规则标注 `[H]`/`[R]`/`[Rec]`/`[Rel]`
 - "绝对不要"5 条增加**归因**（为什么存在）和**豁免条件**（何时可跳过）
 - 新增**纯推理 Stop Conditions**：无简历对话 3 轮预算 + 方向探索 2 轮预算
 - matching-guide.md 新增**跨会话恢复协议**（Phase A 恢复期 / Phase B 按需加载）
 - onboarding-guide.md 新增**方向探索收敛规则**
 - 运行时自检按严重度重排序（H → R → Rec）
-- 详细方案见 `notes/easyslides-inspired-upgrade-plan.md`
 
 ## 上一次结构性改动
 

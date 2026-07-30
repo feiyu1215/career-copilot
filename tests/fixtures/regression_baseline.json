@@ -1,0 +1,11 @@
+{
+  "tier_A": 1,
+  "tier_B": 3,
+  "tier_C": 4,
+  "penalties_applied": 3,
+  "top3": [
+    "JOB_6",
+    "JOB_2",
+    "JOB_1"
+  ]
+}

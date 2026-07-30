@@ -1,0 +1,35 @@
+{
+  "role_type": "搜索推荐策略专家",
+  "direction_anchors": [
+    "搜索推荐",
+    "算法策略",
+    "用户增长"
+  ],
+  "hard_negatives": [
+    "纯运维",
+    "售前支持"
+  ],
+  "skills": [
+    "搜索",
+    "推荐",
+    "召回",
+    "排序",
+    "增长"
+  ],
+  "years_experience": 5,
+  "english_evidence": {
+    "level": "basic"
+  },
+  "education": {
+    "tier": "medium"
+  },
+  "core_experiences": [
+    {
+      "scenario": "搜索推荐策略优化",
+      "evidence_level": "L2",
+      "signal_words": ["搜索", "推荐", "召回", "排序"],
+      "what_i_did": "负责搜索推荐策略优化，提升核心场景转化",
+      "NOT_transferable_to": ["纯运维", "售前支持"]
+    }
+  ]
+}

@@ -55,7 +55,7 @@
 输入：简历(PDF/TXT) + 列表页链接
   │
   ├─ Step 0: 选择 LLM Provider（首次使用时询问）
-  │    ⏸ 用 AskQuestion 让用户选择 internal 或 external
+  │    ⏸ 用 AskQuestion 让用户选择 friday 或 sub2api
   │
   ├─ Step 1: gen_profile.py → boundary_profile.json + candidate_summary.txt
   │    ⏸ 展示方向，等用户确认
@@ -75,7 +75,7 @@
 
 | 位置 | 做什么 | 跳过后果 |
 |---|---|---|
-| Step 0 | 用 AskQuestion 询问用户选择哪个 LLM Provider（internal / external），将选择结果作为后续所有脚本的 `--provider` 参数 | 默认走 internal，用户无法使用更强模型 |
+| Step 0 | 用 AskQuestion 询问用户选择哪个 LLM Provider（friday / sub2api），将选择结果作为后续所有脚本的 `--provider` 参数 | 默认走 friday，用户无法使用更强模型 |
 | Step 1 后 | 展示 direction_anchors + signal_words + education + english_evidence，等确认 | 方向锚点偏移，后续全部评分建立在错误假设上 |
 | Step 4 后 | 展示 A/B/C 摘要 + 选项菜单，等回复 | 用户无法对结果提问或调整 |
 
@@ -158,6 +158,8 @@ JD ≤ 5 或只讨论某个岗位时，不需要跑代码，但遵循相同判�
 
 观察 1-2 页足够——拿到这些信息后立即切到 `fetch_jobs.py --preset generic --selector "..." --base-url "..."` 接管批量抓取。探索成功后把发现记入 memory（见"经验沉淀"）。
 
+**特殊站点：飞书 ATS（`*.jobs.feishu.cn`）** —— 这类站点是 SPA + 前端签名 API，DOM 里没有完整 JD、且请求带 JS 计算的 `_signature`，catdesk + CSS 选择器路线基本失效。无需手动探索结构，直接走 `fetch_jobs_feishu.py --url <列表页链接>`：脚本用 Playwright 拦截 `/api/v1/search/job/posts` 与 `/api/v1/job/posts/{id}`，复用浏览器会话的签名/Cookie 直接拿 JSON。详见 `notes/feishu-ats-crawler.md`。
+
 ---
 
 ## 命令参考
@@ -167,7 +169,7 @@ JD ≤ 5 或只讨论某个岗位时，不需要跑代码，但遵循相同判�
 ```bash
 # Step 0: Provider 选择（在流程开头用 AskQuestion 询问用户，得到 PROVIDER 变量）
 # 用户选择后，后续所有脚本加 --provider <用户选择>
-# 可选值：internal | external
+# 可选值：friday | sub2api
 
 # Step 1: 生成画像
 python3 ~/.catpaw/skills/career-copilot/scripts/gen_profile.py \
@@ -175,6 +177,7 @@ python3 ~/.catpaw/skills/career-copilot/scripts/gen_profile.py \
     --provider $PROVIDER
 
 # Step 2: 抓取 JD
+# —— 路线 A：catdesk-browser（字节/美团/阿里官网等 DOM 友好站点）——
 python3 ~/.catpaw/skills/career-copilot/scripts/fetch_jobs.py \
     --base-url "<含 {page} 占位符的 URL>" \
     --output ./jobs_raw.txt \
@@ -183,6 +186,21 @@ python3 ~/.catpaw/skills/career-copilot/scripts/fetch_jobs.py \
     # --start-page 15            # 断点续爬（从第15页继续）
     # --selector "js表达式"       # generic模式必填，从页面提取的CSS/JS
     # --delay 2.0                # 页间延迟秒数
+
+# —— 路线 B：Playwright 拦截（飞书 ATS 类 SPA + 签名 API，*.jobs.feishu.cn）——
+# 适用于蔚来(nio.jobs.feishu.cn)等使用飞书招聘 SaaS 的站点。
+# 列表 DOM 只有壳、数据走 /api/v1/... 且带前端计算的 _signature，
+# catdesk + CSS 选择器不友好，故改用 Playwright 拦截 XHR（让 SPA 自己算签名）。
+# 输出同样的 JOB_MATCHER_FORMAT v1，下游 smart_score / diff_watch 零改动。
+python3 ~/.catpaw/skills/career-copilot/scripts/fetch_jobs_feishu.py \
+    --url "<飞书 ATS 列表页链接，保留 project/functionCategory 等过滤参数>" \
+    --output ./jobs_raw.txt
+    # --max-jobs 20             # 只抓前 N 个（调试/快速预览）
+    # --no-detail               # 跳过详情接口，只用列表 description（更快）
+    # --limit 200               # 每页条数
+    # --max-concurrency 5       # 详情并发
+    # --no-headless             # 看浏览器在干什么
+# 依赖：pip install playwright && playwright install chromium
 
 # Step 3: 评分（⚠ top-k 经验值 = 总JD数×25%, 下限30上限80）
 python3 ~/.catpaw/skills/career-copilot/scripts/smart_score.py \
@@ -244,6 +262,25 @@ python3 ~/.catpaw/skills/career-copilot/scripts/diff_watch.py \
 
 **scored_results.json 结构**：顶层 `recommendations.tier_A / tier_B / tier_C`（数组），每个 item 有 `score`、`title`、`risks`、`match_reasons`、`advice` 字段。运行元信息在 `pipeline` 下：`stage1 / stage1_5 / stage2 / stage2_5 / post_judge / direction_anchor`。
 
+### 前提来源标注（结论可溯源）[R]
+
+每条输出结论（尤其是 `match_reasons` / `advice` / `risks` 中的判断句）必须带来源标签，让用户知道"这句话凭什么说的"：
+
+| 标签 | 含义 | 示例 |
+|---|---|---|
+| `[事实]` | 来自用户简历 / JD / 已确认输入的直接证据 | "简历含 3 段后端经历" |
+| `[推测]` | 模型基于证据的推断，**非用户明确陈述** | "方向可能偏平台而非业务" |
+| `[迁移]` | 从相邻经历类比推导，跨度越大越要标注 | "数据管道经验 → 可迁移至 ML 工程" |
+| `[权威]` | 来自外部可核验来源（文档 / 官网 / 公开数据） | "该公司 HC 来自面经汇总" |
+| `[脑补]` | **禁止出现**——无任何依据的生成内容 | （红线：不编造） |
+
+硬规则：
+- `[推测]` / `[迁移]` 类结论**不得单独成最终判断**，必须附 `（待验证：…）` 说明如何证伪或还需什么信息。
+- 纯推理模式（JD≤5）的置信度标注已覆盖"信息不足"；但凡用到 `[推测]` 仍须单独标，不与置信度混为一谈。
+- `[权威]` 若只来自**单一未交叉验证**来源，对外材料（简历 / 投递话术）中禁止写入，内部可标 `[单源未复现]`（见 resume-guide 第六章）。
+- 目的：把"不确定必须说"从"仅 fallback 触发"扩展到"日常每条结论"，契合 (A) 提升判断可靠性。
+- **套 lens 不分回合**：澄清 / 延后回合也要用。用户下断言（「感觉挺匹配」「应该够了吧」）时，先把它标成 `[推测]`/`[脑补]` 再回应，不要默认附和或假装没听见；即使还缺简历/JD，也要先对「用户的前提」做来源标注，再索要资料。
+
 **Step 3 → 4 之间**（评分完成后、生成报告前）：
 
 优先级从高到低检查——**先排除方向性错误，再看数值分布**：
@@ -266,10 +303,11 @@ python3 ~/.catpaw/skills/career-copilot/scripts/diff_watch.py \
 
 **Step 2 抓取降级链**（按顺序尝试，不要跳级）：
 
-1. `--preset <站点>` → 失败/返回 0 条
-2. `--preset generic --selector "<从页面观察到的 CSS>"` → 失败/返回 0 条
-3. catdesk-browser 手动翻 1-2 页确认结构 → 提取 selector → 回到第 2 步
-4. 以上全部失败 → 告知用户，问能否提供截图或文本
+1. 站点为 `*.jobs.feishu.cn` → 直接用 `fetch_jobs_feishu.py --url <列表页链接>`（见上）
+2. `--preset <站点>` → 失败/返回 0 条
+3. `--preset generic --selector "<从页面观察到的 CSS>"` → 失败/返回 0 条
+4. catdesk-browser 手动翻 1-2 页确认结构 → 提取 selector → 回到第 3 步
+5. 以上全部失败 → 告知用户，问能否提供截图或文本
 
 **其他降级场景**：
 
@@ -278,6 +316,21 @@ python3 ~/.catpaw/skills/career-copilot/scripts/diff_watch.py \
 | JD 描述极简（< 3 行） | 诚实告知"信息太少"，给初步判断但标注不确定性 |
 | 脚本部分成功部分失败 | 检查输出完整性（strategy 字段、tier 是否为空），有效部分直接用，失败部分用推理补偿 |
 | 没有简历只想问 | 2-3 个关键问题了解背景后用纯推理模式 |
+
+### Over-Claim 自检（四陷阱 + 集群判定）[R]
+
+生成 `match_reasons` / `advice` / 报告结论时，过一遍四面镜子，任一"镜子照出裂痕"即标黄提示，不得直接当用户事实：
+
+1. **修辞当测量** —— "大幅提升 / 高度匹配 / 完全胜任 / 完美契合" 等词是否替代了真实量化？有数字才叫测量，形容词不是。
+2. **同构当佐证** —— 把"做过相似的事"当成"做过这事"（如"做过推荐系统"→"胜任推荐算法岗"）。相似 ≠ 相同。
+3. **偷换论题** —— 结论答的不是用户问的（用户问"适不适合"，答"这个方向很火"）。
+4. **结论过满** —— "一定 / 肯定 / 100% / 毫无风险" 等绝对化表述，求职本就概率事件，过满即夸大。
+- **延伸（确定性终审禁区）**：对**用户自报简历 / 能力**，同样禁止下**确定性终审**——尤其否定性结论（「能力缺失 / 不行 / 不够」）。未验证事实（尤其否定性）不得当终审；缺口只以带标签可证伪结构表达（具备 X、缺口 Z、置信度）。这是 Over-Claim 对「否定侧」的对称约束：夸大要防，武断判「不行」也要防。
+  - 合规示例（用户问「这岗我能不能上」、自报后端 3 年 / pipeline）：把用户断言标 `[推测]`；给可证伪结构——`[事实]` 你具备数据/技术背景（后端 3 年、pipeline），`[事实/JD]` 缺口在产品思维/PRD/用户调研（JD 明确要求），`[推测]` 能否「上」取决于面试与 HC，匹配度约 30-40%（置信度 70%）；**不下「不行/不可能」终审**——缺口是「待补的能力证据」，不是「已证伪的无能」。
+
+集群判定法（防误杀）：单一信号（如某段经历用了"主导"）**不**直接判 Over-Claim；当且仅当**多个信号同现**（绝对化词 + 无量化 + 跨度大）才触发，并给出具体改写建议。
+
+**套 lens 不分回合**：以上四面镜子用于**每一次回应（含澄清 / 延后）**，不只成稿。延后时也跑镜面——不偷换论题（不要只用「发我简历/JD」搪塞而给不出任何结构化判断）、不绝对化、不无依据、不过度承诺；即便信息不足，也给出「你具备 X（依据…）、缺口在 Z（依据…）」的可证伪结构，而不是空泛延后。
 
 ### 常见错误类型及诊断方向
 
@@ -378,7 +431,7 @@ career-memory (历史偏好)
 
 - Python ≥ 3.9
 - PDF 解析：`pypdf`/`PyPDF2`/`pdfminer.six`（至少装一个）
-- LLM 调用：支持多 Provider 切换（详见 `.env.example`）。通过环境变量 `LLM_PROVIDER` 切换（值为 `internal` 或 `external`），或在脚本命令中用 `--provider external` 参数指定。也可单独设置 `LLM_BASE_URL`/`LLM_API_KEY`（internal）或 `EXTERNAL_BASE_URL`/`EXTERNAL_API_KEY`（external）覆盖默认值
+- LLM 调用：支持多 Provider 切换（详见 `.env.example`）。通过环境变量 `LLM_PROVIDER` 切换（值为 `friday` 或 `sub2api`），或在脚本命令中用 `--provider sub2api` 参数指定。也可单独设置 `LLM_BASE_URL`/`FRIDAY_APP_ID`（friday）或 `SUB2API_BASE_URL`/`SUB2API_API_KEY`（sub2api）覆盖默认值
 - 浏览器能力：fetch_jobs.py 的通用模式（`--preset generic --selector`）依赖从页面提取 CSS selector，需要 web-access skill 或等效的浏览器操作能力
 
 ### 数据约束

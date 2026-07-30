@@ -1,0 +1,49 @@
+{
+  "id": "golden_009",
+  "meta": {
+    "track": "tech",
+    "role_family": "supply-chain",
+    "transition": true,
+    "career_stage": "experienced",
+    "match_band": "mid"
+  },
+  "profile": {
+    "direction_anchors": [
+      "供应链计划",
+      "数字化转型",
+      "跨部门协同",
+      "数据分析",
+      "项目管理"
+    ],
+    "hard_negatives": [
+      "纯互联网研发",
+      "算法建模",
+      "写代码"
+    ],
+    "skills": [
+      "S&OP",
+      "需求预测",
+      "PowerBI",
+      "Excel",
+      "项目管理",
+      "跨部门推动"
+    ],
+    "years_experience": 6
+  },
+  "jd_title": "供应链数字化专家（互联网）",
+  "jd_department": "",
+  "jd_location": "",
+  "jd_text": "【供应链数字化专家（互联网）】职责：负责供应链计划与履约的数字化体系建设，串联采购/仓储/物流数据，推动自动化与智能补货。要求：熟悉供应链计划（S&OP/需求预测）；有数字化转型/系统落地经验；能用数据驱动决策（SQL/BI）；具备互联网敏捷协作经验；有跨部门项目推动力。",
+  "sample_resume": "【样例简历·合成测试数据，非真实个人经历】\n意向：供应链数字化专家｜6 年经验（传统制造业背景）\n经历：某制造企业 供应链计划——S&OP、需求预测、PowerBI 报表、Excel 建模、跨部门项目推动；主导数字化转型系统落地。\n技能：S&OP、需求预测、PowerBI、Excel、项目管理、跨部门推动。\n教育：本科。\n注：偏传统制造业；互联网敏捷语境与 SQL/BI 仅基础（PowerBI+Excel）。",
+  "expected_score": 68,
+  "expected_tier": "C",
+  "tolerance": 6,
+  "key_reasons": [
+    "供应链计划/数字化转型/数据驱动/项目管理命中，S&OP 与需求预测命中专业要求",
+    "转型缺口：JD 偏好互联网敏捷语境，画像偏传统制造业、SQL/BI 仅 PowerBI+Excel",
+    "无硬负向命中（非研发/算法）"
+  ],
+  "difficulty": "edge",
+  "annotator": "human",
+  "annotated_at": "2026-07-28"
+}

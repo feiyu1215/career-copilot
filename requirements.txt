@@ -1,11 +1,49 @@
 # Career Copilot — Python 依赖
-# 安装: pip install -r requirements.txt
+# 安装方式（任选其一）：
+#   pip install -r requirements.txt
+#   uv sync --all-extras            （推荐，见 pyproject.toml；会同时装 visual 与测试依赖）
+#
+# 版本号取自当前已验证可跑（530 passed / 0 failed / 0 skipped）的 venv 精确快照，
+# 以保证可复现、零漂移。如需升级，请改 pyproject.toml 后重新 `uv lock`。
 
-# LLM 调用（硬依赖）
-openai>=1.0
+# LLM 调用（硬依赖，scripts/llm_client.py）
+openai==2.46.0
 
-# PDF 简历解析（至少装一个）
-pypdf>=3.0
+# PDF 简历解析（verify_ats.py / 抽取）
+pypdf==6.14.2
 
-# 测试（开发时使用）
-pytest>=7.0
+# Pipeline 配置化（config/pipeline.yaml 等）
+pyyaml==6.0.3
+
+# 评估指标（Golden Cases 准确度：Spearman ρ / Kendall τ 等）
+scipy==1.18.0
+numpy==2.5.1
+
+# 网络抓取（fetch_jobs 等 HTTP 请求）
+requests==2.34.2
+
+# Word 简历输出（build_docx / 导出 .docx）
+python-docx==1.2.0
+
+# LLM tokenizer（tiktoken，用于 token 计费/截断）
+tiktoken==0.13.0
+
+# 进度条
+tqdm==4.69.0
+
+# 正则（部分脚本用到高级正则特性）
+regex==2026.7.19
+
+# HTML/XML 解析（lxml，抓取/清洗用）
+lxml==6.1.1
+
+# 飞书 ATS 站点抓取（scripts/fetch_jobs_feishu.py）
+# 注意：仅当需要从 *.jobs.feishu.cn 批量抓 JD 时才用；装完后还需 `playwright install chromium` 下载浏览器。
+playwright==1.61.0
+
+# 测试
+pytest==9.1.1
+
+# 可选：视觉巡检后端（scripts/visual_inspect.py: inspect_pdf，抽 PDF 坐标检测孤行/溢出）
+# 已声明于 pyproject.toml [project.optional-dependencies] visual；启用：uv sync --extra visual
+# pymupdf==1.28.0

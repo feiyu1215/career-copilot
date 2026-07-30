@@ -1,5 +1,18 @@
 # 环境变量（含 API Key）
 .env
+*.env
+*.env.local
+
+# 本地数据（job_tracker / 去重缓存 / 生成产物，均含个人数据，不入库）
+notes/
+data/
+career_log*.json
+draft*.tex
+*.pdf
+
+# 用户自管 LaTeX 简历模板（含个人排版风格，不入库）
+templates/
+templates.registry.json
 
 # Python
 __pycache__/
@@ -10,10 +23,39 @@ __pycache__/
 *.json.bak
 jobs_raw.txt
 scored_results.json
+evals/eval_results_dynamic*.json
+evals/transcripts/
 boundary_profile.json
 candidate_summary.txt
 decision_context.json
 report.html
 
+# 运行时产物（fetch_jobs_feishu 抓取断点）
+feishu_checkpoint.json
+
 # macOS
 .DS_Store
+
+# Python virtual environment
+.venv/
+
+# T13：LLM 语义缓存目录
+.cache/
+
+# CodeGraph local index (本地产物，不入库)
+.codegraph/
+
+# === recovery: exclude test/log artifacts ===
+.pytest_tmp/
+_pytest_tmp*/
+e2e_out/
+scripts/.traces/
+/_*log
+/audit*.log
+/score_*.log
+/dump_scores.log
+/info.log
+/full.log
+/pytest_out.log
+/t.log
+/v.log

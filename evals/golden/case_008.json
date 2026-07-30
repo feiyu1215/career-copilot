@@ -1,0 +1,47 @@
+{
+  "id": "golden_008",
+  "meta": {
+    "track": "non-tech",
+    "role_family": "operations",
+    "transition": false,
+    "career_stage": "intern",
+    "match_band": "mid"
+  },
+  "profile": {
+    "direction_anchors": [
+      "内容运营",
+      "社群运营",
+      "文案",
+      "数据复盘"
+    ],
+    "hard_negatives": [
+      "算法开发",
+      "后端开发"
+    ],
+    "skills": [
+      "内容策划",
+      "社群运营",
+      "文案写作",
+      "Excel",
+      "飞书多维表",
+      "基础数据分析"
+    ],
+    "years_experience": 0
+  },
+  "jd_title": "内容运营实习生",
+  "jd_department": "",
+  "jd_location": "",
+  "jd_text": "【内容运营实习生】职责：负责社群与内容日常运营，策划话题与活动，做数据复盘并输出周报；配合增长做拉新。要求：在校大学生，每周到岗≥4 天；有内容策划/社群运营经验；文案能力强；会用基础数据工具（Excel/飞书多维表）；对互联网运营有热情。",
+  "sample_resume": "【样例简历·合成测试数据，非真实个人经历】\n意向：内容运营实习生｜在校\n经历：某社群运营实习——话题策划、活动执行、数据复盘周报；配合增长拉新。\n技能：内容策划、社群运营、文案写作、Excel、飞书多维表、基础数据分析。\n教育：在校大学生（每周到岗≥4 天）。",
+  "expected_score": 82,
+  "expected_tier": "B",
+  "tolerance": 5,
+  "key_reasons": [
+    "内容运营/社群运营/文案/数据复盘全命中，Excel/飞书多维表满足基础数据工具",
+    "在校+每周到岗匹配实习要求",
+    "无硬负向命中（非算法/开发）"
+  ],
+  "difficulty": "easy",
+  "annotator": "human",
+  "annotated_at": "2026-07-28"
+}

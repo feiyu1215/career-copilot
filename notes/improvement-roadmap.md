@@ -1,4 +1,7 @@
+<!-- last_reviewed: 2026-07-23 | review_cycle_days: 90 -->
 # Career Copilot 改进路线图
+
+> **📌 状态（2026-07-21）**：早期改进路线图（CatX 博客 + 外部资源洞察），未标注执行状态；其中若已落地的方向统一记录在 `audit-borrowing-plan.md` §6。本文件为待办池与历史参考，非当前活跃计划。
 
 > 基于 CatX 博客精选 16 篇文章 + 6 个外部资源的架构洞察，结合源码审视提出的改进方向。  
 > 优先级：P0 = 立即可做，收益明显 / P1 = 中期迭代 / P2 = 长期演进  
@@ -227,7 +230,7 @@ python3 smart_score.py --mode rerank --input _stage2.json --output scored_result
 
 **改进**：
 - 增加 `fallback_provider` 配置
-- 连续 3 次失败自动切换到 fallback（如 internal → external）
+- 连续 3 次失败自动切换到 fallback（如 friday → sub2api）
 - 按错误类型分策略：rate limit 等更久、timeout 立即重试、bad JSON 换 temperature
 
 ### P1：Selector 漂移早期检测

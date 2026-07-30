@@ -6,6 +6,7 @@ Career Copilot 环境检测脚本。
 用法：python3 check_env.py
 """
 
+import shutil
 import sys
 
 
@@ -52,18 +53,34 @@ def main():
         "pip install openai"
     )
 
+    # LaTeX 引擎（build_cv 编译 PDF 硬依赖；优先级与 build_cv 一致）
+    latex_engine = detect_latex_engine()
+    all_ok &= check(
+        f"LaTeX 引擎 ({'/'.join(ENGINE_CANDIDATES)})",
+        latex_engine is not None,
+        "安装 TeX 发行版（TeX Live / MiKTeX）"
+    )
+
+    # python-docx（build_cv 的 DOCX 降级路径）
+    docx_ok = _try_import("docx")
+    all_ok &= check(
+        "python-docx（DOCX 降级路径）",
+        docx_ok,
+        "pip install python-docx"
+    )
+
     # 网络连通性检查
     print("\n  网络连通性检测：")
     _check_network_connectivity()
 
     # LLM 调用配置提示
     print("\n  ℹ️  LLM 平台配置（多 Provider 支持）：")
-    print("     当前实现支持两个 Provider：internal（内部平台）和 external（外部 API 代理）")
+    print("     当前实现支持两个 Provider：friday（内部平台）和 sub2api（外部 API 代理）")
     print("     切换方式：")
-    print("       1. 环境变量 LLM_PROVIDER=internal|external（全局默认）")
-    print("       2. 脚本参数 --provider internal|external（单次覆盖）")
+    print("       1. 环境变量 LLM_PROVIDER=friday|sub2api（全局默认）")
+    print("       2. 脚本参数 --provider friday|sub2api（单次覆盖）")
     print("       3. Pipeline 启动时 AskQuestion 交互选择")
-    print("     高级覆盖：LLM_BASE_URL/LLM_API_KEY（internal）或 EXTERNAL_BASE_URL/EXTERNAL_API_KEY（external）")
+    print("     高级覆盖：LLM_BASE_URL/FRIDAY_APP_ID（Friday）或 SUB2API_BASE_URL/SUB2API_API_KEY（Sub2API）")
 
     print()
     if all_ok:
@@ -81,6 +98,19 @@ def _try_import(name: str) -> bool:
         return False
 
 
+# LaTeX 引擎优先级：与 build_cv.find_latex_engine 保持一致（lualatex > xelatex > pdflatex）。
+# 自包含实现，避免在 bootstrap 期 import build_cv 连带拉入 verify_ats / visual_inspect 重依赖。
+ENGINE_CANDIDATES = ("lualatex", "xelatex", "pdflatex")
+
+
+def detect_latex_engine() -> str | None:
+    """返回首个可用的 LaTeX 引擎；都没有返回 None（调用方须显式报错，不静默降级）。"""
+    for engine in ENGINE_CANDIDATES:
+        if shutil.which(engine):
+            return engine
+    return None
+
+
 def _check_network_connectivity():
     """检测 LLM Provider 的网络连通性（HEAD 请求，5s 超时）。"""
     import os
@@ -88,15 +118,17 @@ def _check_network_connectivity():
     import urllib.error
 
     providers = {
-        "internal": os.environ.get("LLM_BASE_URL", ""),
-        "external": os.environ.get("EXTERNAL_BASE_URL", ""),
+        "friday": os.environ.get(
+            "LLM_BASE_URL",
+            "https://friday.xiaojukeji.com"
+        ),
+        "sub2api": os.environ.get(
+            "SUB2API_BASE_URL",
+            "https://api.sub2api.com"
+        ),
     }
 
     for name, base_url in providers.items():
-        if not base_url:
-            print(f"    ⚠️  {name} — 未配置（请在 .env 中设置对应 URL）")
-            continue
-
         # 规范化 URL：确保是 https 开头的完整地址
         url = base_url.rstrip("/")
         if not url.startswith("http"):

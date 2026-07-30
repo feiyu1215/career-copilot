@@ -1,0 +1,9 @@
+{
+  "_comment": "候选行为画像示例。复制为 behavioral_profile.json 后填写你自己的 DISC 评估。两种形态二选一：styles(0~1连续) 或 high/low(离散)。缺失该文件时 behavior_fit 取中性 0.5，不误导。",
+  "styles": {
+    "D": 0.8,
+    "I": 0.7,
+    "S": 0.4,
+    "C": 0.6
+  }
+}

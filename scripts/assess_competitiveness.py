@@ -44,7 +44,7 @@ from typing import Optional
 # 共享 LLM 客户端
 SCRIPT_DIR = Path(__file__).parent
 sys.path.insert(0, str(SCRIPT_DIR))
-from llm_client import LLMClient  # noqa: E402
+from llm_client import LLMClient, LLMCallFailed  # noqa: E402
 
 
 ASSESSMENT_SYSTEM = """你是一位资深求职策略顾问，帮助候选人评估每个目标岗位的"投递难度"和"录用概率"。
@@ -153,16 +153,30 @@ async def assess_single(client, candidate_summary: str, profile: dict,
 
 ## 请评估投递难度，输出 JSON"""
 
-    resp = await client.chat_raw(
-        messages=[
-            {"role": "system", "content": ASSESSMENT_SYSTEM},
-            {"role": "user", "content": user_prompt},
-        ],
-        temperature=0.0,
-        max_tokens=400,
-    )
+    try:
+        resp = await client.chat_raw(
+            messages=[
+                {"role": "system", "content": ASSESSMENT_SYSTEM},
+                {"role": "user", "content": user_prompt},
+            ],
+            temperature=0.0,
+            max_tokens=400,
+        )
+    except LLMCallFailed:
+        print(f"  ⚠ [{job['title'][:20]}] LLM 调用失败，降级为 needs_review", file=sys.stderr)
+        return {
+            "job_id": job.get("job_id", ""),
+            "title": job["title"],
+            "tier": job.get("tier", "?"),
+            "score": job.get("score", 0),
+            "department": job.get("department", ""),
+            "location": job.get("location", ""),
+            "positioning": "needs_review", "needs_review": True,
+            "confidence": 0.0, "gaps": [], "interview_risk": "LLM 调用失败",
+            "reasoning": "模型调用失败，需人工复核",
+        }
 
-    content = (resp.choices[0].message.content or "").strip() if resp else ""
+    content = (resp.choices[0].message.content or "").strip()
 
     # 解析 JSON
     if content.startswith("```"):
@@ -183,14 +197,14 @@ async def assess_single(client, candidate_summary: str, profile: dict,
                 result = json.loads(content[start:end + 1])
             except json.JSONDecodeError:
                 print(f"  ⚠ [{job['title'][:20]}] JSON 解析失败: {content[:100]}")
-                result = {"positioning": "match", "confidence": 0.3,
-                         "gaps": [], "interview_risk": "解析失败",
-                         "reasoning": "模型输出无法解析"}
+                result = {"positioning": "needs_review", "needs_review": True,
+                         "confidence": 0.0, "gaps": [], "interview_risk": "解析失败",
+                         "reasoning": "模型输出无法解析，需人工复核"}
         else:
             print(f"  ⚠ [{job['title'][:20]}] 响应无 JSON 结构: {content[:100]}")
-            result = {"positioning": "match", "confidence": 0.3,
-                     "gaps": [], "interview_risk": "解析失败",
-                     "reasoning": "模型输出无法解析"}
+            result = {"positioning": "needs_review", "needs_review": True,
+                     "confidence": 0.0, "gaps": [], "interview_risk": "解析失败",
+                     "reasoning": "模型输出无法解析，需人工复核"}
 
     return {
         "job_id": job.get("job_id", ""),
@@ -226,16 +240,21 @@ async def generate_strategy(client, assessments: list[dict],
 
 ## 请生成投递组合建议，输出 JSON"""
 
-    resp = await client.chat_raw(
-        messages=[
-            {"role": "system", "content": STRATEGY_SYSTEM},
-            {"role": "user", "content": user_prompt},
-        ],
-        temperature=0.0,
-        max_tokens=1500,
-    )
+    try:
+        resp = await client.chat_raw(
+            messages=[
+                {"role": "system", "content": STRATEGY_SYSTEM},
+                {"role": "user", "content": user_prompt},
+            ],
+            temperature=0.0,
+            max_tokens=1500,
+        )
+    except LLMCallFailed:
+        print(f"  ⚠ 投递策略 LLM 调用失败，返回空策略", file=sys.stderr)
+        return {"strategy_summary": "策略生成失败（LLM 调用失败）",
+                "recommended_order": [], "preparation_tips": [], "risk_note": ""}
 
-    content = (resp.choices[0].message.content or "").strip() if resp else ""
+    content = (resp.choices[0].message.content or "").strip()
     if content.startswith("```"):
         content = "\n".join(content.split("\n")[1:])
     if content.endswith("```"):
@@ -360,7 +379,7 @@ def main():
     parser.add_argument("--summary", required=True, help="candidate_summary.txt 路径")
     parser.add_argument("--output", required=True, help="输出 decision_context.json 路径")
     parser.add_argument("--model", default="gpt-4.1-mini", help="使用的模型")
-    parser.add_argument("--provider", default=None, help="LLM provider: internal 或 external（默认读环境变量 LLM_PROVIDER）")
+    parser.add_argument("--provider", default=None, help="LLM provider: friday 或 sub2api（默认读环境变量 LLM_PROVIDER）")
     args = parser.parse_args()
     asyncio.run(run(args))
 

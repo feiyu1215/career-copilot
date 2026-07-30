@@ -31,9 +31,9 @@
     "direction_anchor": "AI自动化评测 / RAG知识检索 / AI标注平台 / Agent工作流"
   },
   "summary": {
-    "tier_A": 6,
-    "tier_B": 21,
-    "tier_C": 23
+    "tier_A": 3,
+    "tier_B": 2,
+    "tier_C": 1
   },
   "recommendations": {
     "tier_A": [

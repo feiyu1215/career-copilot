@@ -201,3 +201,48 @@ class TestPreFilter:
         profile = {"english_evidence": {"level": "basic"}, "core_experiences": []}
         filtered, stats = pre_filter(jobs, profile, exclude_english_hard=True, config=DEFAULT_FILTER_CONFIG)
         assert stats["excluded_english"] == 1
+
+    # ---- Phase 4.3：质量守门（过短 / 垃圾信号）----
+
+    def test_exclude_short_jd(self):
+        # 正文不足 min_jd_chars 直接丢弃（库默认关闭，这里显式开启阈值）
+        jobs = [self._make_job("AI 产品经理", "一句话 JD")]
+        profile = {"english_evidence": {"level": "fluent"}, "core_experiences": []}
+        filtered, stats = pre_filter(jobs, profile, config={**DEFAULT_FILTER_CONFIG, "min_jd_chars": 30})
+        assert stats["filtered_short_count"] == 1
+        assert len(filtered) == 0
+
+    def test_exclude_spam_jd(self):
+        # 命中诈骗/垃圾强信号 → spam 跳过（优先于过短判定）
+        jobs = [self._make_job("高薪内推", "本公司提供付费内推服务，先交费后安排面试")]
+        profile = {"english_evidence": {"level": "fluent"}, "core_experiences": []}
+        filtered, stats = pre_filter(jobs, profile, config={**DEFAULT_FILTER_CONFIG, "min_jd_chars": 30})
+        assert stats["filtered_spam_count"] == 1
+        assert len(filtered) == 0
+
+    def test_spam_signal_does_not_overtrigger_on_normal_training(self):
+        # 正常 JD 提到"培训体系"不应被判 spam
+        jobs = [self._make_job("后端工程师", "负责核心服务开发，公司提供完善培训体系，3年以上经验，技术栈 Python")]
+        profile = {
+            "english_evidence": {"level": "fluent"},
+            "core_experiences": [{"scenario": "后端", "signal_words": ["Python"], "NOT_transferable_to": [], "transferable_to": []}],
+            "hard_negatives": [],
+            "direction_anchors": ["后端"],
+        }
+        filtered, stats = pre_filter(jobs, profile, config={**DEFAULT_FILTER_CONFIG, "min_jd_chars": 30})
+        assert stats["filtered_spam_count"] == 0
+        assert len(filtered) == 1
+
+    def test_short_threshold_configurable(self):
+        # 阈值可调：正文 60 字，阈值设到 50 应放行
+        text = "负责推荐系统产品规划" * 6  # 约 60 字
+        jobs = [self._make_job("AI 产品经理", text)]
+        profile = {
+            "english_evidence": {"level": "fluent"},
+            "core_experiences": [{"scenario": "推荐系统", "signal_words": ["推荐"], "NOT_transferable_to": [], "transferable_to": []}],
+            "hard_negatives": [],
+            "direction_anchors": ["AI产品"],
+        }
+        filtered, stats = pre_filter(jobs, profile, config={**DEFAULT_FILTER_CONFIG, "min_jd_chars": 50})
+        assert stats["filtered_short_count"] == 0
+        assert len(filtered) == 1

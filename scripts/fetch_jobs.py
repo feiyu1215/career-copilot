@@ -24,7 +24,7 @@ fetch_jobs.py — 批量抓取招聘网站岗位 JD（v3 通用辅助脚本）
     --start-page    从第几页开始（默认 1，断点续爬时可设为已爬到的页码+1）
     --delay         每页之间等待秒数（默认 2.0）
     --selector      自定义 JS 提取表达式（返回 ||| 分隔的文本）
-    --preset        使用内置选择器预设（bytedance / meituan / alibaba / generic）
+    --preset        使用内置选择器预设（bytedance / meituan / alibaba / generic / boss）
 
 输出格式：
     # JOB_MATCHER_FORMAT v1 generated_at=<ISO时间> total_jobs=<N>
@@ -52,6 +52,13 @@ import re
 import datetime
 import hashlib
 import shutil
+
+# Phase 7.2：抓取节流（按 portals.yaml 的 rate_limit 主动限流）
+try:
+    from job_common import acquire_portal_throttle
+except ImportError:
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    from job_common import acquire_portal_throttle
 
 # 自动检测 catdesk 路径（优先级：环境变量 > ~/.catdesk/bin > ~/.catpaw/bin > PATH）
 def _find_catdesk() -> str:
@@ -132,6 +139,16 @@ PRESETS = {
         "[class*=job-list] [class*=job-item], "
         "[class*=list] a[href*=position], "
         "[class*=job-card], [class*=position-card]'"
+        ")).map(el => {"
+        "  const text = el.innerText.trim();"
+        "  const a = el.tagName === 'A' ? el : el.querySelector('a[href]');"
+        "  const url = a ? a.href : '';"
+        "  return url ? '[URL]' + url + '[/URL]\\n' + text : text;"
+        "}).filter(t => t.replace(/^\\[URL\\].*?\\[\\/URL\\]\\n/, '').length > 20).join('|||')"
+    ),
+    "boss": (
+        "Array.from(document.querySelectorAll("
+        "'.job-card-wrapper, [class*=job-card]'"
         ")).map(el => {"
         "  const text = el.innerText.trim();"
         "  const a = el.tagName === 'A' ? el : el.querySelector('a[href]');"
@@ -314,6 +331,7 @@ def fetch_all_jobs(
             print(f"[{page}/{total_pages}]{eta_str} ", end="", flush=True)
 
             # 导航
+            acquire_portal_throttle("catdesk")  # [7.2] 按 portals.yaml 主动节流
             success = navigate_to_page(url)
             if not success:
                 print(f"导航失败")
@@ -342,14 +360,13 @@ def fetch_all_jobs(
                 failed_pages.append(page)
                 continue
 
-            # 如果成功但为空，检查是否到达末尾
+            # 如果成功但为空，检查是否到达末尾（空页是正常分页终止信号，不计为失败页）
             if not jobs:
                 consecutive_empty_pages += 1
                 print(f"空（连续空页: {consecutive_empty_pages}/2）")
                 if consecutive_empty_pages >= 2:
                     print(f"\n[STOP] 连续 {consecutive_empty_pages} 页为空，判定已抓取完毕")
                     break
-                failed_pages.append(page)
                 continue
 
             # 去重

@@ -1,0 +1,43 @@
+{
+  "id": "golden_001",
+  "profile": {
+    "direction_anchors": [
+      "后端开发",
+      "Python",
+      "分布式系统"
+    ],
+    "hard_negatives": [
+      "纯前端",
+      "销售",
+      "实习"
+    ],
+    "skills": [
+      "Python",
+      "Go",
+      "MySQL",
+      "Redis",
+      "Kubernetes"
+    ],
+    "years_experience": 3
+  },
+  "meta": {
+    "track": "tech",
+    "role_family": "backend",
+    "transition": false,
+    "career_stage": "experienced",
+    "match_band": "mid"
+  },
+  "jd_text": "【后端开发工程师】职责：负责公司业务支撑系统的后端架构设计与开发，参与核心模块编码、接口设计与性能优化，保障系统稳定性与可扩展性。要求：3年以上 Python/Go 开发经验，熟悉分布式系统设计，掌握 MySQL/Redis 等存储与缓存，了解 Kubernetes 容器化部署；具备良好的工程素养与跨团队协作能力。备注：本岗位服务于非核心交易业务线。",
+  "sample_resume": "【样例简历·合成测试数据，非真实个人经历】\n意向：后端开发工程师｜3 年经验\n经历：某科技公司 后端开发工程师（2023-至今）——用 Python/Go 开发业务支撑系统后端，负责接口设计与性能优化；基于 MySQL/Redis 设计存储与缓存方案；参与 Kubernetes 容器化部署。\n技能：Python、Go、MySQL、Redis、Kubernetes；熟悉分布式系统设计。\n教育：计算机相关本科。",
+  "expected_score": 84,
+  "expected_tier": "B",
+  "tolerance": 5,
+  "key_reasons": [
+    "技术栈高度匹配",
+    "年限刚好满足",
+    "非核心交易团队（风险）"
+  ],
+  "difficulty": "medium",
+  "annotator": "human",
+  "annotated_at": "2026-07-22"
+}
