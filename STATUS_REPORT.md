@@ -56,7 +56,7 @@
 1. **🔴 未提交的工作树（最高优先）**：149 个文件、+4306/−1745 行改动尚未 `git commit`/`push`。这是"多门户抓取 + Tier2 简历实物生成 + JD 零信任"这一大轮迭代的收尾，测试已全绿，但**未入库即存在丢失/漂移风险**。
 2. **🟠 文档对齐**：`FILE_GUIDE.md` 严重滞后（21 vs 47 脚本）；`SKILL.md`、README 需随未提交批次同步（README 已在未提交树中被重写 −206 行）。
 3. **🟡 评测硬门禁受限**：`agnes` 跨 run 方差大、`nvidia` 免费端点 503/hang → `make eval` 只能作 advisory（`--skip-on-error`），**无法作可靠硬 CI 阻断**（已知限制，非 bug）。
-4. **🟡 旧路线图遗留的 aspirational 项**（多已过时/被取代，未显式关闭）：Prompt 版本化、全局 Semaphore 共享限流、Pipeline 显式 Schema 校验（`schema.py`）、记忆关联推理、`--ab-test`。这些在 `skilllens_upgrade_plan` 之后多数不再活跃，建议清理或正式归档。
+4. **🟡 旧路线图遗留的 aspirational 项**（多已过时/被取代，未显式关闭）：Prompt 版本化、全局 Semaphore 共享限流、Pipeline 显式 Schema 校验（`schema.py`）、记忆关联推理、`--ab-test`。这些在 `skilllens_upgrade_plan`（已归档至 notes/archive/skilllens_upgrade_plan.archived.md）之后多数不再活跃，已正式归档。
 5. **🟡 BOSS 抓取运行时依赖**：`fetch_boss.py` 的可用后端依赖外部 `bsk daemon` / `boss-cli` 与已登录 Edge 会话；抽象基类 `BaseBackend` 的 `NotImplementedError` 是正常多态设计（子类已实现），**非功能缺口**，但真实可用性取决于运行环境是否具备该浏览器会话。
 
 ---
@@ -91,6 +91,6 @@
 **最该做的三件事**：
 1. **立即 commit + push** 当前 149 文件工作树（先 `git stash` 备份防丢失），把"多门户 + Tier2 简历生成 + JD 零信任"这一轮落库。
 2. **同步文档**：刷新 `FILE_GUIDE.md`（脚本清单 21→47）、`SKILL.md` 路由、`README`，消除滞后。
-3. **清理旧路线图**：将 `improvement-roadmap.md` 中已被取代的条目正式标记归档，避免误导。
+3. **清理旧路线图**：将 `notes/archive/improvement-roadmap.archived.md` 中已被取代的条目正式标记归档，避免误导。
 
 > 备注：本评估基于 `git` 已提交历史至 `4624d2b`，叠加未提交工作树（截至 2026-07-30 实跑 530 passed）。如需把本报告作为正式交付物纳入版本库，可告诉我，我会追加到 `notes/` 并提交。

@@ -392,6 +392,40 @@
 
 ---
 
+### `scripts/` 新增脚本速览（v2 以来新增，无独立 prose）
+
+> 以下 25 个脚本在初版 FILE_GUIDE 之后加入，统一以「一行职责」速览，避免正文膨胀。详细 bus-factor 见上方 `### `scripts/`（46 个）` 表。Owner 均为闫飞宇，最后核实 2026-07-30。
+
+| 文件 | 一行职责 |
+|------|---------|
+| `batch_fetch.py` | N2 多 portal 批处理 Orchestrator（统一调度各门户后端） |
+| `behavior_fit.py` | 行为风格 × JD 要求 拟合评分（确定性，纯 stdlib，零网络） |
+| `build_cv.py` | 把 drafter_reviewer 产出的 LaTeX 草稿编译为可投递 PDF，并跑 ATS 校验闭环 |
+| `build_cv_docx.py` | 非 LaTeX 降级：用 python-docx 从结构化草稿生成 .docx 简历 |
+| `build_upskill_brief.py` | 方向性缺口 / 升级概览生成器（refined upskill） |
+| `calibration_feedback.py` | 投递结果反馈 → 评分校准（Phase 6.1） |
+| `competitiveness_tracker.py` | Phase 8.2 竞争力动态评估（纯本地、零 LLM 确定性内核 + 可选增强） |
+| `drafter_reviewer.py` | Tier2 简历 Drafter-Reviewer 双轨评审 |
+| `fetch_boss.py` | BOSS 直聘岗位抓取（薄封装 + 可插拔后端） |
+| `fetch_jobs_linkedin.py` | LinkedIn 多门户后端 |
+| `fetch_jobs_nowcoder.py` | 牛客网（校招/社招）多门户后端 |
+| `fetch_jobs_shixiseng.py` | 实习僧（实习岗）多门户后端 |
+| `first_seen.py` | Phase 8.3 智能投递时机建议（first_seen 追踪 + 时机建议） |
+| `jd_guard.py` | JD 信任边界（不可信数据） |
+| `job_common.py` | 多门户抓取的共享逻辑（纯 stdlib，离线可测） |
+| `job_tracker.py` | 申请/结果生命周期闭环 + 反馈回路 |
+| `manage_template.py` | U6 简历/求职信 LaTeX 模板注册（外观定制，非替人决策） |
+| `notify_wecom.py` | 企业微信群机器人推送（纯 stdlib，零第三方依赖） |
+| `relevance_trim.py` | 简历超页时「按相关性而非按时间」裁页 |
+| `run_pipeline.py` | 2.1 端到端求职编排器（体验质变点） |
+| `setup_wizard.py` | 交互式建档引导（Phase 5.1） |
+| `trend_analyzer.py` | 岗位市场趋势感知（Phase 8.1，纯本地、零 LLM） |
+| `verify_ats.py` | 简历 PDF 的 ATS 文本层与硬性不变量检查 |
+| `verify_fetch_quality.py` | 抓取结果质量守门（Phase 4.3）的契约化校验 CLI |
+| `visual_inspect.py` | 编译后「逐页看 PDF」的确定性视觉巡检 + 源码级防孤行 |
+
+---
+
 ## `evals/` — 评测脚手架
 
 复用 `scripts/llm_client.py` 的真实 LLM Provider，对 Skill 的「契约遵循度」做可量化评测。所有结果 JSON（`eval_results_dynamic*.json`）已 `.gitignore`，不进版本库。
@@ -594,6 +628,23 @@ Agent 执行任务时参考的知识文档，LLM 通过读取这些文件获取�
 
 ---
 
+### `references/` 新增速览（v2 以来新增，无独立 prose）
+
+> 以下 8 个 reference 在初版 FILE_GUIDE 之后加入。详细 bus-factor 见上方 `### `references/`（22 个）` 表。Owner 均为闫飞宇，最后核实 2026-07-30。
+
+| 文件 | 一行职责 |
+|------|---------|
+| `behavioral-profile.md` | 行为画像（Behavioral Profile）方法论 |
+| `boss-fetch.md` | BOSS 直聘抓取约定（fetch_boss.py） |
+| `jd-trust-boundary.md` | JD 信任边界（不可信数据） |
+| `job-fetch.md` | 多门户抓取编排（job-fetch） |
+| `job-tracker.md` | Job Tracker（P5）规范 |
+| `interview-done-template.md` | Interview Done — 面试结果事件模板 |
+| `resource-index.md` | 本地资源索引（owner 自管，未联网） |
+| `setup-guide.md` | 建档引导流程（Setup Guide） |
+
+---
+
 ## `examples/` — 示例数据
 
 ### `examples/boundary_profile_example.json`
@@ -668,11 +719,11 @@ Agent 执行任务时参考的知识文档，LLM 通过读取这些文件获取�
 
 > ⚠️ **时效性**：本文记录的是「对齐模式 = 带推荐答案多问」的**升级前**设计。当前 `SKILL.md` ① 对齐模式已升级为 **deep-grill 哲学**（先调查、再自我反驳、只批量升级主观分歧），以 `SKILL.md` 为准。
 
-### `notes/improvement-roadmap.md`
+### `notes/archive/notes/archive/improvement-roadmap.archived.md`（已归档 · SUPERSEDED）
 
-**职责**：改进路线图。
+> ⚠️ **已归档**：本路线图已于 2026-07-30 移入 `notes/archive/` 并改名 `improvement-roadmap.archived.md`，内容已被实际实现（v2 多门户抓取 / Tier2 简历生成 / Phase 8 系列 / 端到端编排器等）取代，仅作历史参考，不再作为待办来源。当前改进跟踪以 `notes/evolution-log.md` 与 `evals/` 为准。
 
-**内容**：短/中/长期改进计划，包括算法优化方向、新功能规划、技术债务清理等。
+**原职责**：改进路线图（短/中/长期改进计划、算法优化方向、新功能规划、技术债务清理等）。
 
 ---
 
@@ -744,6 +795,8 @@ Agent 执行任务时参考的知识文档，LLM 通过读取这些文件获取�
                       └── career_log.py（记忆管理）
 ```
 
+> **v2 以来新增的关键执行节点**（未在上图逐个画出，避免图过密）：`run_pipeline.py`（2.1 端到端编排器，串起建档→抓取→评分→报告→CV 生成）、`batch_fetch.py` + 各 `fetch_jobs_*` / `fetch_boss.py` + `job_common.py`（多门户抓取后端群）、`drafter_reviewer.py` / `build_cv.py` / `build_cv_docx.py` / `verify_ats.py` / `visual_inspect.py`（Tier2 简历生成与 ATS 闭环）、`jd_guard.py`（JD 信任边界）、`trend_analyzer.py` / `competitiveness_tracker.py` / `first_seen.py`（Phase 8 市场/竞争力/时机系列）、`job_tracker.py`（申请生命周期）。
+
 ---
 
 ## 典型开发工作流
@@ -768,56 +821,89 @@ Agent 执行任务时参考的知识文档，LLM 通过读取这些文件获取�
 | 文件 | Owner | 更新节律 | 复杂度 | 最后核实 |
 |------|-------|---------|--------|---------|
 | `SKILL.md` | 闫飞宇 | 中频 | 高（入口 + 约束集，改动需全量回归） | 2026-07-21 |
-| `FILE_GUIDE.md` | 闫飞宇 | 中频 | 中（随文件增减更新） | 2026-07-21 |
+| `FILE_GUIDE.md` | 闫飞宇 | 中频 | 中（随文件增减更新） | 2026-07-30 |
 | `requirements.txt` | 闫飞宇 | 低频 | 低 | 2026-07-21 |
 | `.env.example` | 闫飞宇 | 低频 | 低 | 2026-07-21 |
 | `.gitignore` | 闫飞宇 | 低频 | 低 | 2026-07-21 |
 | `LICENSE` | 闫飞宇 | 不变 | 低 | 2026-07-21 |
 
-### `scripts/`（21 个）
+### `scripts/`（46 个）
 
 | 文件 | Owner | 更新节律 | 复杂度 | 最后核实 |
 |------|-------|---------|--------|---------|
-| `llm_client.py` | 闫飞宇 | 低频 | 高（所有脚本依赖，仅 provider 增减时动） | 2026-07-23 |
-| `check_env.py` | 闫飞宇 | 低频 | 低 | 2026-07-21 |
-| `gen_profile.py` | 闫飞宇 | 中频 | 中高（prompt / 模型改动） | 2026-07-21 |
-| `fetch_jobs.py` | 闫飞宇 | 中频 | 中（随站点结构） | 2026-07-21 |
-| `fetch_jobs_feishu.py` | 闫飞宇 | 中频 | 中高（随飞书 ATS API） | 2026-07-21 |
-| `smart_score.py` | 闫飞宇 | 中频 | 高（核心六阶段 pipeline） | 2026-07-23 |
-| `pre_filter.py` | 闫飞宇 | 低频 | 中 | 2026-07-21 |
-| `post_judge.py` | 闫飞宇 | 低频 | 中 | 2026-07-23 |
-| `verify_output.py` | 闫飞宇 | 低频 | 中（契约新增时动） | 2026-07-21 |
-| `verify_lens.py` | 闫飞宇 | 低频 | 中（软契约新增时动） | 2026-07-21 |
-| `generate_report.py` | 闫飞宇 | 低频 | 中 | 2026-07-21 |
-| `assess_competitiveness.py` | 闫飞宇 | 低频 | 中 | 2026-07-21 |
-| `diff_watch.py` | 闫飞宇 | 低频 | 中 | 2026-07-21 |
-| `career_log.py` | 闫飞宇 | 低频 | 中（记忆 schema 改动时动） | 2026-07-21 |
-| `cache.py` | 闫飞宇 | 低频 | 低（T13 语义缓存，仅被 smart_score 调用） | 2026-07-23 |
-| `log_utils.py` | 闫飞宇 | 低频 | 低（结构化日志工具） | 2026-07-23 |
-| `provider_chain.py` | 闫飞宇 | 低频 | 中（Provider 降级链，被 llm_client 调用，对应 ADR-002） | 2026-07-23 |
-| `report_assets.py` | 闫飞宇 | 低频 | 低（report 内联 CSS/JS 资源） | 2026-07-23 |
-| `trace.py` | 闫飞宇 | 低频 | 低（执行 Trace，性能/回归诊断） | 2026-07-23 |
-| `config_loader.py` | 闫飞宇 | 低频 | 低（加载 config/constraints.yaml 单一事实源） | 2026-07-23 |
-| `check_notes_freshness.py` | 闫飞宇 | 低频 | 低（notes 评审新鲜度扫描，--strict 可作 CI 门禁） | 2026-07-23 |
+| `llm_client.py` | 闫飞宇 | 低频 | 高（所有脚本依赖，仅 provider 增减时动） | 2026-07-30 |
+| `check_env.py` | 闫飞宇 | 低频 | 低 | 2026-07-30 |
+| `gen_profile.py` | 闫飞宇 | 中频 | 中高（prompt / 模型改动） | 2026-07-30 |
+| `fetch_jobs.py` | 闫飞宇 | 中频 | 中（随站点结构） | 2026-07-30 |
+| `fetch_jobs_feishu.py` | 闫飞宇 | 中频 | 中高（随飞书 ATS API） | 2026-07-30 |
+| `smart_score.py` | 闫飞宇 | 中频 | 高（核心六阶段 pipeline） | 2026-07-30 |
+| `pre_filter.py` | 闫飞宇 | 低频 | 中 | 2026-07-30 |
+| `post_judge.py` | 闫飞宇 | 低频 | 中 | 2026-07-30 |
+| `verify_output.py` | 闫飞宇 | 低频 | 中（契约新增时动） | 2026-07-30 |
+| `verify_lens.py` | 闫飞宇 | 低频 | 中（软契约新增时动） | 2026-07-30 |
+| `generate_report.py` | 闫飞宇 | 低频 | 中 | 2026-07-30 |
+| `assess_competitiveness.py` | 闫飞宇 | 低频 | 中 | 2026-07-30 |
+| `diff_watch.py` | 闫飞宇 | 低频 | 中 | 2026-07-30 |
+| `career_log.py` | 闫飞宇 | 低频 | 中（记忆 schema 改动时动） | 2026-07-30 |
+| `cache.py` | 闫飞宇 | 低频 | 低（T13 语义缓存，仅被 smart_score 调用） | 2026-07-30 |
+| `log_utils.py` | 闫飞宇 | 低频 | 低（结构化日志工具） | 2026-07-30 |
+| `provider_chain.py` | 闫飞宇 | 低频 | 中（Provider 降级链，被 llm_client 调用，对应 ADR-002） | 2026-07-30 |
+| `report_assets.py` | 闫飞宇 | 低频 | 低（report 内联 CSS/JS 资源） | 2026-07-30 |
+| `trace.py` | 闫飞宇 | 低频 | 低（执行 Trace，性能/回归诊断） | 2026-07-30 |
+| `config_loader.py` | 闫飞宇 | 低频 | 低（加载 config/constraints.yaml 单一事实源） | 2026-07-30 |
+| `check_notes_freshness.py` | 闫飞宇 | 低频 | 低（notes 评审新鲜度扫描，--strict 可作 CI 门禁） | 2026-07-30 |
+| `batch_fetch.py` | 闫飞宇 | 中频 | 中（多门户批处理编排，随后端增减） | 2026-07-30 |
+| `behavior_fit.py` | 闫飞宇 | 低频 | 中（确定性行为拟合，纯 stdlib） | 2026-07-30 |
+| `build_cv.py` | 闫飞宇 | 中频 | 中高（LaTeX 编译 + ATS 闭环，随模板/引擎） | 2026-07-30 |
+| `build_cv_docx.py` | 闫飞宇 | 低频 | 中（python-docx 降级路径） | 2026-07-30 |
+| `build_upskill_brief.py` | 闫飞宇 | 低频 | 中（升级概览生成） | 2026-07-30 |
+| `calibration_feedback.py` | 闫飞宇 | 低频 | 中（Phase 6.1 投递反馈校准） | 2026-07-30 |
+| `competitiveness_tracker.py` | 闫飞宇 | 低频 | 中高（Phase 8.2 动态评估内核） | 2026-07-30 |
+| `drafter_reviewer.py` | 闫飞宇 | 中频 | 中高（Tier2 双轨评审，随评审规则） | 2026-07-30 |
+| `fetch_boss.py` | 闫飞宇 | 中频 | 中（BOSS 直聘后端，随站点） | 2026-07-30 |
+| `fetch_jobs_linkedin.py` | 闫飞宇 | 中频 | 中（LinkedIn 后端，随站点） | 2026-07-30 |
+| `fetch_jobs_nowcoder.py` | 闫飞宇 | 中频 | 中（牛客网后端，随站点） | 2026-07-30 |
+| `fetch_jobs_shixiseng.py` | 闫飞宇 | 中频 | 中（实习僧后端，随站点） | 2026-07-30 |
+| `first_seen.py` | 闫飞宇 | 低频 | 中（Phase 8.3 时机建议，纯本地） | 2026-07-30 |
+| `jd_guard.py` | 闫飞宇 | 低频 | 中高（JD 信任边界，随风控规则） | 2026-07-30 |
+| `job_common.py` | 闫飞宇 | 低频 | 中（多门户共享逻辑，被各 fetch 后端依赖） | 2026-07-30 |
+| `job_tracker.py` | 闫飞宇 | 中频 | 中（P5 申请/结果生命周期闭环） | 2026-07-30 |
+| `manage_template.py` | 闫飞宇 | 低频 | 低（U6 模板注册，外观定制） | 2026-07-30 |
+| `notify_wecom.py` | 闫飞宇 | 低频 | 低（企业微信推送，零依赖） | 2026-07-30 |
+| `relevance_trim.py` | 闫飞宇 | 低频 | 中（超页相关性裁页） | 2026-07-30 |
+| `run_pipeline.py` | 闫飞宇 | 中频 | 高（2.1 端到端编排器，体验质变点） | 2026-07-30 |
+| `setup_wizard.py` | 闫飞宇 | 低频 | 中（Phase 5.1 交互式建档引导） | 2026-07-30 |
+| `trend_analyzer.py` | 闫飞宇 | 低频 | 中高（Phase 8.1 市场趋势，零 LLM 内核） | 2026-07-30 |
+| `verify_ats.py` | 闫飞宇 | 低频 | 中（PDF ATS 文本层 + 不变量检查） | 2026-07-30 |
+| `verify_fetch_quality.py` | 闫飞宇 | 低频 | 中（Phase 4.3 抓取质量守门 CLI） | 2026-07-30 |
+| `visual_inspect.py` | 闫飞宇 | 低频 | 中（PDF 逐页视觉巡检 + 防孤行） | 2026-07-30 |
 
-### `references/`（14 个）
+### `references/`（22 个）
 
 | 文件 | Owner | 更新节律 | 复杂度 | 最后核实 |
 |------|-------|---------|--------|---------|
-| `matching-guide.md` | 闫飞宇 | 中频 | 高（核心匹配方法论） | 2026-07-21 |
-| `capability-modes.md` | 闫飞宇 | 低频 | 中（从 SKILL.md 拆出的能力模式定义） | 2026-07-23 |
-| `session-lifecycle.md` | 闫飞宇 | 低频 | 中（从 SKILL.md 拆出的会话生命周期） | 2026-07-23 |
-| `resume-guide.md` | 闫飞宇 | 中频 | 高（核心简历护栏） | 2026-07-21 |
-| `interview-prep.md` | 闫飞宇 | 低频 | 中 | 2026-07-21 |
-| `career-memory.md` | 闫飞宇 | 低频 | 中 | 2026-07-21 |
-| `onboarding-guide.md` | 闫飞宇 | 低频 | 低 | 2026-07-21 |
-| `evolution-log.md` | 闫飞宇 | 中频 | 低 | 2026-07-21 |
-| `career-context.template.md` | 闫飞宇 | 低频 | 低 | 2026-07-21 |
-| `company-research.md` | 闫飞宇 | 低频 | 低 | 2026-07-21 |
-| `decision-log.template.md` | 闫飞宇 | 低频 | 低 | 2026-07-21 |
-| `job-search-spec.md` | 闫飞宇 | 低频 | 低 | 2026-07-21 |
-| `risk-light.md` | 闫飞宇 | 低频 | 中 | 2026-07-21 |
-| `chatgpt-lite.md` | 闫飞宇 | 低频 | 低（独立可粘贴文档） | 2026-07-21 |
+| `matching-guide.md` | 闫飞宇 | 中频 | 高（核心匹配方法论） | 2026-07-30 |
+| `capability-modes.md` | 闫飞宇 | 低频 | 中（能力模式定义） | 2026-07-30 |
+| `session-lifecycle.md` | 闫飞宇 | 低频 | 中（会话生命周期） | 2026-07-30 |
+| `resume-guide.md` | 闫飞宇 | 中频 | 高（核心简历护栏） | 2026-07-30 |
+| `interview-prep.md` | 闫飞宇 | 低频 | 中 | 2026-07-30 |
+| `career-memory.md` | 闫飞宇 | 低频 | 中 | 2026-07-30 |
+| `onboarding-guide.md` | 闫飞宇 | 低频 | 低 | 2026-07-30 |
+| `evolution-log.md` | 闫飞宇 | 中频 | 低 | 2026-07-30 |
+| `career-context.template.md` | 闫飞宇 | 低频 | 低 | 2026-07-30 |
+| `company-research.md` | 闫飞宇 | 低频 | 低 | 2026-07-30 |
+| `decision-log.template.md` | 闫飞宇 | 低频 | 低 | 2026-07-30 |
+| `job-search-spec.md` | 闫飞宇 | 低频 | 低 | 2026-07-30 |
+| `risk-light.md` | 闫飞宇 | 低频 | 中 | 2026-07-30 |
+| `chatgpt-lite.md` | 闫飞宇 | 低频 | 低（独立可粘贴文档） | 2026-07-30 |
+| `behavioral-profile.md` | 闫飞宇 | 低频 | 中（行为画像方法论） | 2026-07-30 |
+| `boss-fetch.md` | 闫飞宇 | 低频 | 中（BOSS 直聘抓取约定，配 fetch_boss.py） | 2026-07-30 |
+| `jd-trust-boundary.md` | 闫飞宇 | 低频 | 中高（JD 信任边界，配 jd_guard.py） | 2026-07-30 |
+| `job-fetch.md` | 闫飞宇 | 低频 | 中（多门户抓取编排说明，配 batch_fetch/job_common） | 2026-07-30 |
+| `job-tracker.md` | 闫飞宇 | 低频 | 中（Job Tracker 规范，配 job_tracker.py） | 2026-07-30 |
+| `interview-done-template.md` | 闫飞宇 | 低频 | 低（面试结果事件模板） | 2026-07-30 |
+| `resource-index.md` | 闫飞宇 | 低频 | 低（本地资源索引，owner 自管） | 2026-07-30 |
+| `setup-guide.md` | 闫飞宇 | 低频 | 低（建档引导流程，配 setup_wizard.py） | 2026-07-30 |
 
 ### 降低 bus factor 的建议（待办）
 
