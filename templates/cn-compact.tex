@@ -1,0 +1,51 @@
+\documentclass[UTF8, 10pt, a4paper]{ctexart}
+% career-copilot 模板：cn-compact（中国市场 · 双栏紧凑 · 1 页 · 实习/应届）
+% 说明：双栏通过 multicol 将正文均匀分栏以压缩篇幅；
+%       若需「左栏联系方式/技能、右栏经历」的定侧栏布局，需 drafter 预拆分正文（后续工作）。
+% 占位符字段（由 build_cv 展开）：CV_BODY=drafter_reviewer 正文；CV_NAME=姓名；
+%                       CV_EMAIL=邮箱（ATS 字面校验）；CV_PHONE=手机（ATS 字面校验）
+\usepackage[top=1.2cm, bottom=1.2cm, left=1.3cm, right=1.3cm]{geometry}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{multicol}
+\usepackage{enumitem}
+\usepackage{hyperref}
+
+\definecolor{cvblue}{RGB}{20, 60, 120}
+
+\setcounter{secnumdepth}{0}
+\titleformat{\section}
+  {\normalsize\bfseries\color{cvblue}}
+  {}
+  {0pt}
+  {}
+  [\vspace{1pt}\textcolor{cvblue}{\titlerule[0.6pt]}\vspace{2pt}]
+\titleformat{\subsection}
+  {\small\bfseries}
+  {}
+  {0pt}
+  {}
+
+\setlist[itemize]{leftmargin=1.1em, nosep, itemsep=0.5pt}
+\setlist[enumerate]{leftmargin=1.2em, nosep, itemsep=0.5pt}
+
+\pagestyle{empty}
+\setlength{\columnsep}{0.8cm}
+\setlength{\parindent}{0pt}
+
+\begin{document}
+
+{\centering
+  {\large\bfseries __CV_NAME__}\par
+  \vspace{2pt}
+  {\footnotesize __CV_EMAIL__ \quad\textbullet\quad __CV_PHONE__}\par
+  \vspace{4pt}
+  \textcolor{cvblue}{\titlerule[0.8pt]}\par
+  \vspace{4pt}
+}
+
+\begin{multicols}{2}
+__CV_BODY__
+\end{multicols}
+
+\end{document}

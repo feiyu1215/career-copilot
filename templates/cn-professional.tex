@@ -1,0 +1,50 @@
+\documentclass[UTF8, 11pt, a4paper]{ctexart}
+% career-copilot 模板：cn-professional（中国市场 · 单栏 · 蓝色标题线 · 2 页上限）
+% 占位符字段（由 build_cv 展开）：CV_BODY=drafter_reviewer 正文；CV_NAME=姓名；
+%                       CV_EMAIL=邮箱（ATS 字面校验）；CV_PHONE=手机（ATS 字面校验）
+\usepackage[top=1.6cm, bottom=1.6cm, left=1.8cm, right=1.8cm]{geometry}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{hyperref}
+
+\definecolor{cvblue}{RGB}{20, 60, 120}
+
+% 章节标题：蓝色、无编号、下方细线
+% （build 链路的 protect_headings 会在每个 section 前注入 needspace 防孤行）
+\setcounter{secnumdepth}{0}
+\titleformat{\section}
+  {\large\bfseries\color{cvblue}}
+  {}
+  {0pt}
+  {}
+  [\vspace{1pt}\textcolor{cvblue}{\titlerule[0.8pt]}\vspace{3pt}]
+\titleformat{\subsection}
+  {\normalsize\bfseries}
+  {}
+  {0pt}
+  {}
+
+% 紧凑列表
+\setlist[itemize]{leftmargin=1.2em, nosep, itemsep=1pt}
+\setlist[enumerate]{leftmargin=1.4em, nosep, itemsep=1pt}
+
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+
+\begin{document}
+
+% ---- 页眉：姓名 + 联系方式 ----
+{\centering
+  {\LARGE\bfseries __CV_NAME__}\par
+  \vspace{3pt}
+  {\small __CV_EMAIL__ \quad\textbullet\quad __CV_PHONE__}\par
+  \vspace{4pt}
+  \textcolor{cvblue}{\titlerule[1pt]}\par
+  \vspace{6pt}
+}
+
+% ---- 简历正文（drafter_reviewer 产出）----
+__CV_BODY__
+
+\end{document}

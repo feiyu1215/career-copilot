@@ -1,0 +1,17 @@
+{
+  "cn-professional": {
+    "file": "cn-professional.tex",
+    "registered_at": "2026-07-27T00:03:45",
+    "smoke_ok": true
+  },
+  "cn-compact": {
+    "file": "cn-compact.tex",
+    "registered_at": "2026-07-27T00:03:54",
+    "smoke_ok": true
+  },
+  "en-single-col": {
+    "file": "en-single-col.tex",
+    "registered_at": "2026-07-27T00:05:16",
+    "smoke_ok": true
+  }
+}

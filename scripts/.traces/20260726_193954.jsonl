@@ -1,0 +1,2 @@
+{"timestamp": "2026-07-26T19:40:00.179", "stage": "stage1", "event": "call_end", "provider": "agnes", "model": "agnes-2.0-flash", "input_tokens": 658, "output_tokens": 36, "latency_ms": 5643, "job_ids": ["JOB_1"], "error": null, "is_fallback": false}
+{"timestamp": "2026-07-26T19:40:06.314", "stage": "stage2", "event": "call_end", "provider": "agnes", "model": "agnes-2.0-flash", "input_tokens": 1711, "output_tokens": 307, "latency_ms": 3246, "job_ids": ["JOB_1"], "error": null, "is_fallback": false}

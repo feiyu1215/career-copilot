@@ -1,0 +1,48 @@
+\documentclass[11pt, a4paper]{article}
+% career-copilot 模板：en-single-col（英文 · 单栏 · Lato · 外企投递）
+% 字体用 Lato（通过 LaTeX `lato` 包，无需系统字体），与 ai-job-search 同族但本仓自行实现。
+% 占位符字段（由 build_cv 展开）：CV_BODY=drafter_reviewer 正文；CV_NAME=姓名；
+%                       CV_EMAIL=邮箱（ATS 字面校验）；CV_PHONE=手机（ATS 字面校验）
+\usepackage[T1]{fontenc}
+\usepackage{lato}
+\usepackage[top=1.6cm, bottom=1.6cm, left=1.8cm, right=1.8cm]{geometry}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{hyperref}
+
+\definecolor{cvblue}{RGB}{20, 60, 120}
+
+\setcounter{secnumdepth}{0}
+\titleformat{\section}
+  {\large\bfseries\color{cvblue}}
+  {}
+  {0pt}
+  {}
+  [\vspace{1pt}\textcolor{cvblue}{\titlerule[0.8pt]}\vspace{3pt}]
+\titleformat{\subsection}
+  {\normalsize\bfseries}
+  {}
+  {0pt}
+  {}
+
+\setlist[itemize]{leftmargin=1.2em, nosep, itemsep=1pt}
+\setlist[enumerate]{leftmargin=1.4em, nosep, itemsep=1pt}
+
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+
+\begin{document}
+
+{\centering
+  {\LARGE\bfseries __CV_NAME__}\par
+  \vspace{3pt}
+  {\small __CV_EMAIL__ \quad\textbullet\quad __CV_PHONE__}\par
+  \vspace{4pt}
+  \textcolor{cvblue}{\titlerule[1pt]}\par
+  \vspace{6pt}
+}
+
+__CV_BODY__
+
+\end{document}
