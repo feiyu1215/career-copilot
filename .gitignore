@@ -26,6 +26,8 @@ scored_results.json
 evals/eval_results_dynamic*.json
 evals/transcripts/
 boundary_profile.json
+# 个人求职画像（含隐私，永不出库）
+behavioral_profile.json
 candidate_summary.txt
 decision_context.json
 report.html

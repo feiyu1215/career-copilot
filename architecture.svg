@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 280" font-family="'Segoe UI',-apple-system,'Microsoft YaHei',sans-serif">
+  <defs>
+    <marker id="arrow" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#666"/>
+    </marker>
+  </defs>
+
+  <!-- background -->
+  <rect x="0" y="0" width="880" height="280" fill="#fafafa"/>
+
+  <!-- title -->
+  <text x="440" y="34" text-anchor="middle" font-size="17" font-weight="700" fill="#222">Career Copilot · 六阶段评分 Pipeline</text>
+  <text x="440" y="54" text-anchor="middle" font-size="12" fill="#666">模型负责判断 · 代码负责约束</text>
+
+  <!-- arrows between boxes -->
+  <line x1="120" y1="118" x2="142" y2="118" stroke="#666" stroke-width="1.6" marker-end="url(#arrow)"/>
+  <line x1="242" y1="118" x2="264" y2="118" stroke="#666" stroke-width="1.6" marker-end="url(#arrow)"/>
+  <line x1="364" y1="118" x2="386" y2="118" stroke="#666" stroke-width="1.6" marker-end="url(#arrow)"/>
+  <line x1="486" y1="118" x2="508" y2="118" stroke="#666" stroke-width="1.6" marker-end="url(#arrow)"/>
+  <line x1="608" y1="118" x2="630" y2="118" stroke="#666" stroke-width="1.6" marker-end="url(#arrow)"/>
+  <line x1="730" y1="118" x2="752" y2="118" stroke="#666" stroke-width="1.6" marker-end="url(#arrow)"/>
+
+  <!-- box 1: Pre-Filter -->
+  <rect x="20" y="90" width="100" height="56" rx="8" fill="#e8f0fe" stroke="#4285f4" stroke-width="1.5"/>
+  <text x="70" y="114" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1a3c8f">Pre-Filter</text>
+  <text x="70" y="132" text-anchor="middle" font-size="10" fill="#3c5aa8">确定性预过滤</text>
+
+  <!-- box 2: Stage1 -->
+  <rect x="142" y="90" width="100" height="56" rx="8" fill="#e6f4ea" stroke="#34a853" stroke-width="1.5"/>
+  <text x="192" y="110" text-anchor="middle" font-size="12.5" font-weight="700" fill="#14532d">Stage1 粗筛</text>
+  <text x="192" y="126" text-anchor="middle" font-size="9.5" fill="#1e7a3d">便宜模型·temp0·×3</text>
+  <text x="192" y="139" text-anchor="middle" font-size="9.5" fill="#1e7a3d">anchor 权重40%</text>
+
+  <!-- box 3: Stage1.5 -->
+  <rect x="264" y="90" width="100" height="56" rx="8" fill="#e6f4ea" stroke="#34a853" stroke-width="1.5"/>
+  <text x="314" y="114" text-anchor="middle" font-size="12.5" font-weight="700" fill="#14532d">Stage1.5</text>
+  <text x="314" y="132" text-anchor="middle" font-size="10" fill="#1e7a3d">校准知识生成</text>
+
+  <!-- box 4: Stage2 -->
+  <rect x="386" y="90" width="100" height="56" rx="8" fill="#e6f4ea" stroke="#34a853" stroke-width="1.5"/>
+  <text x="436" y="110" text-anchor="middle" font-size="12.5" font-weight="700" fill="#14532d">Stage2 精排</text>
+  <text x="436" y="126" text-anchor="middle" font-size="9.5" fill="#1e7a3d">Listwise 分组</text>
+  <text x="436" y="139" text-anchor="middle" font-size="9.5" fill="#1e7a3d">+ 风险标注</text>
+
+  <!-- box 5: Stage2.5 -->
+  <rect x="508" y="90" width="100" height="56" rx="8" fill="#fef7e0" stroke="#fbbc04" stroke-width="1.5"/>
+  <text x="558" y="110" text-anchor="middle" font-size="12.5" font-weight="700" fill="#7a5b00">Stage2.5</text>
+  <text x="558" y="126" text-anchor="middle" font-size="9.5" fill="#8a6500">全局重排</text>
+  <text x="558" y="139" text-anchor="middle" font-size="9.5" fill="#8a6500">锚定 ±20 钳制</text>
+
+  <!-- box 6: Post-Judge -->
+  <rect x="630" y="90" width="100" height="56" rx="8" fill="#fce8e6" stroke="#ea4335" stroke-width="1.5"/>
+  <text x="680" y="110" text-anchor="middle" font-size="12.5" font-weight="700" fill="#7a1712">Post-Judge</text>
+  <text x="680" y="126" text-anchor="middle" font-size="9.5" fill="#a3291f">确定性后处理</text>
+  <text x="680" y="139" text-anchor="middle" font-size="9.5" fill="#a3291f">A档≤25%</text>
+
+  <!-- box 7: Verify -->
+  <rect x="752" y="90" width="100" height="56" rx="8" fill="#f3e8fd" stroke="#a142f4" stroke-width="1.5"/>
+  <text x="802" y="114" text-anchor="middle" font-size="12.5" font-weight="700" fill="#4a1a7a">Verify</text>
+  <text x="802" y="132" text-anchor="middle" font-size="10" fill="#6a2ca3">12 项契约</text>
+
+  <!-- bottom note band -->
+  <rect x="20" y="180" width="832" height="64" rx="8" fill="#ffffff" stroke="#ddd" stroke-width="1"/>
+  <text x="36" y="202" font-size="11.5" font-weight="700" fill="#333">可靠性兜底</text>
+  <text x="36" y="222" font-size="10.5" fill="#555">JD 零信任（4 类注入剥离） · 降级显式标注（served_note） · 熔断 30%/5 · 重试分类 · 语义缓存 7d</text>
+  <text x="36" y="238" font-size="10.5" fill="#555">Provider 降级链：friday → sub2api → nvidia → agnes · 面试复盘校准闭环（确定性 ±分，零 LLM）</text>
+</svg>
