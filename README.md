@@ -4,6 +4,7 @@
 > *Career Copilot: a verifiable, degradable, auditable 6-stage scoring pipeline for end-to-end job-search assistance.*
 
 > 运行时入口是 `SKILL.md`（Agent 加载它即为事实源）。本文件是给访客/面试官看的工程说明。
+> *English version: [README_EN.md](README_EN.md).*
 
 ---
 
@@ -75,7 +76,7 @@ flowchart LR
 - **静态契约**：`verify_output.py` 在每次产出后跑 12 项断言，CI 可拦截不合规输出。
 - **抓取质量守门**：`run_pipeline.py` 的 `quality_gate_check`（Phase 4.3）默认 report-only，可 `--quality-gate-fail` 硬拦截低质量抓取。
 - **评测产物**：`evals/transcripts/` 保留盲评/复盘的脱敏转录，用于回归比对。
-- **Golden cases 跨模型盲评**（进行中）：标注黄金用例 + 多模型独立盲评，作为 Phase 3 的一部分持续推进；本仓库当前以契约测试 + 转录比对为主，盲评结论随标注补齐后补充。
+- **Golden cases + 跨模型盲评**：10 个黄金用例（`evals/golden/case_001..010.json`）已按分级规则（90+/85–89=A/72–84=B/<72=C）标注；跨模型独立盲评方法论见 [`evals/CROSS_MODEL_BLIND_EVAL.md`](evals/CROSS_MODEL_BLIND_EVAL.md) —— 对 Provider 链（friday / sub2api / nvidia / agnes）逐模型独立跑分并盲聚合比较。门禁：MAE≤8、ρ≥0.85、TierAcc≥80%、Outlier≤10%。盲评实测需配置密钥后运行，结论随跑分补齐（不在无 key 环境虚构）。
 
 ---
 
