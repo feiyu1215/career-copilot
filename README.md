@@ -135,7 +135,7 @@ career-copilot/
 1. **判断力给模型，约束力给代码。** LLM 不该是唯一真相源；不可信输入与不可逆决策必须由确定性代码兜底。
 2. **降级要可见，不要静默。** 任何 Provider 降级、fallback、钳制都在输出里标注，便于审计与信任校准。
 3. **评分要可解释、可复现。** 三变体粗筛 + 锚定钳制降低方差；确定性后处理保证分布可控。
-4. **面试官的视角 = 工程深度 > 营销话术。** 本仓库刻意做成可审计的系统，而非演示玩具。
+4. **故障要优雅，不静默崩溃。** 任一 Provider 或解析失败都有确定性兜底路径，异常被记录而非掩盖，评分不被污染。
 
 ---
 
@@ -152,7 +152,7 @@ career-copilot/
 > An end-to-end AI scoring engine and coaching Skill for job hunting — turning *role matching / resume optimization / interview prep / career memory* into a single **verifiable, degradable, auditable** 6-stage scoring pipeline.
 > *Career Copilot: a verifiable, degradable, auditable 6-stage scoring pipeline for end-to-end job-search assistance.*
 
-> The runtime entry point is `SKILL.md` (loaded by the Agent as the source of truth). This file is the engineering write-up for visitors / interviewers.
+> The runtime entry point is `SKILL.md` (loaded by the Agent as the source of truth). This file is the engineering write-up for visitors and contributors.
 
 ---
 ## 1. The 6-Stage Scoring Pipeline (Architecture)
@@ -281,7 +281,7 @@ career-copilot/
 1. **Judgment to the model, constraints to the code.** The LLM should not be the sole source of truth; untrusted input and irreversible decisions must be backstopped by deterministic code.
 2. **Degradation is visible, not silent.** Any provider failover, fallback, or clamp is tagged in the output for audit and trust calibration.
 3. **Scoring is explainable and reproducible.** 3-variant coarse screen + anchored clamp reduce variance; deterministic post-processing keeps distribution controllable.
-4. **From the interviewer's view: engineering depth > marketing talk.** This repo is deliberately an auditable system, not a demo toy.
+4. **Failures are graceful, never silent.** Any provider or parse failure has a deterministic fallback path; anomalies are logged, not hidden, and never pollute the score.
 
 ---
 
