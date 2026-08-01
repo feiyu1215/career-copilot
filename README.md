@@ -15,25 +15,7 @@
 
 模型只负责「判断」，代码负责「约束」。整条链路是**确定性骨架 + LLM 判断力**的组合：每一阶段产出可被下一阶段消费，最终由 12 项契约断言兜底。
 
-```mermaid
-flowchart LR
-    JD[JD 原文] --> PF[Pre-Filter<br/>确定性预过滤]
-    PF --> S1[Stage1 全量粗筛<br/>便宜模型 · temp=0.0 · ×3 变体]
-    S1 --> S15[Stage1.5 校准<br/>动态辨别知识生成]
-    S15 --> S2[Stage2 Listwise 精排<br/>分组重排 + 风险标注]
-    S2 --> S25[Stage2.5 全局重排<br/>以 Stage1 为锚 ±20 钳制]
-    S25 --> PJ[Post-Judge<br/>确定性后处理]
-    PJ --> V[Verify<br/>12 项输出契约]
-    V --> OUT[最终评分报告]
-    HC[career_log.jsonl<br/>面试复盘校准] -. 确定性加减分 .-> S1
-    style PF fill:#e8f0fe,stroke:#4285f4
-    style S1 fill:#e6f4ea,stroke:#34a853
-    style S15 fill:#e6f4ea,stroke:#34a853
-    style S2 fill:#e6f4ea,stroke:#34a853
-    style S25 fill:#fef7e0,stroke:#fbbc04
-    style PJ fill:#fce8e6,stroke:#ea4335
-    style V fill:#f3e8fd,stroke:#a142f4
-```
+![Career Copilot 六阶段评分架构](assets/architecture.svg)
 
 | 阶段 | 职责 | 模型 / 温度 | 关键设计 |
 |---|---|---|---|
@@ -159,25 +141,7 @@ career-copilot/
 
 The model is responsible for *judgment*; the code is responsible for *constraints*. The whole chain is a **deterministic skeleton + LLM judgment** combo: each stage's output feeds the next, and 12 contract assertions backstop the final result.
 
-```mermaid
-flowchart LR
-    JD[JD text] --> PF[Pre-Filter<br/>deterministic prefilter]
-    PF --> S1[Stage1 coarse screen<br/>cheap model · temp=0.0 · ×3 variants]
-    S1 --> S15[Stage1.5 calibration<br/>dynamic discriminative knowledge]
-    S15 --> S2[Stage2 Listwise rerank<br/>grouped rerank + risk tags]
-    S2 --> S25[Stage2.5 global rerank<br/>Stage1-anchored ±20 clamp]
-    S25 --> PJ[Post-Judge<br/>deterministic post-processing]
-    PJ --> V[Verify<br/>12 output contracts]
-    V --> OUT[Final score report]
-    HC[career_log.jsonl<br/>interview calibration] -. deterministic +/- .-> S1
-    style PF fill:#e8f0fe,stroke:#4285f4
-    style S1 fill:#e6f4ea,stroke:#34a853
-    style S15 fill:#e6f4ea,stroke:#34a853
-    style S2 fill:#e6f4ea,stroke:#34a853
-    style S25 fill:#fef7e0,stroke:#fbbc04
-    style PJ fill:#fce8e6,stroke:#ea4335
-    style V fill:#f3e8fd,stroke:#a142f4
-```
+![Career Copilot 6-stage scoring architecture](assets/architecture.svg)
 
 | Stage | Responsibility | Model / Temp | Key design |
 |---|---|---|---|

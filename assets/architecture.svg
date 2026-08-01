@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 470" font-family="'PingFang SC','Microsoft YaHei','Segoe UI',sans-serif">
+  <rect x="0" y="0" width="900" height="470" rx="14" fill="#ffffff"/>
+  <defs>
+    <marker id="ah" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#5f6368"/>
+    </marker>
+  </defs>
+
+  <text x="55" y="28" font-size="14" font-weight="700" fill="#202124">六阶段评分 Pipeline · 确定性骨架 + LLM 判断力</text>
+
+  <!-- inputs -->
+  <rect x="55" y="44" width="150" height="46" rx="8" fill="#e8eaed" stroke="#5f6368" stroke-width="1.5"/>
+  <text x="130" y="72" text-anchor="middle" font-size="13" font-weight="600" fill="#202124">JD 原文</text>
+
+  <rect x="250" y="44" width="210" height="46" rx="8" fill="#e8eaed" stroke="#5f6368" stroke-width="1.5"/>
+  <text x="355" y="64" text-anchor="middle" font-size="12" font-weight="600" fill="#202124">career_log.jsonl</text>
+  <text x="355" y="80" text-anchor="middle" font-size="10.5" fill="#5f6368">面试复盘校准</text>
+
+  <!-- input arrows -->
+  <path d="M130,90 L130,118 L105,118 L105,148" fill="none" stroke="#5f6368" stroke-width="1.6" marker-end="url(#ah)"/>
+  <path d="M355,90 L355,118 L220,118 L220,148" fill="none" stroke="#5f6368" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#ah)"/>
+  <text x="300" y="112" font-size="10" fill="#5f6368">确定性 ±</text>
+
+  <!-- stages -->
+  <rect x="55" y="150" width="100" height="72" rx="8" fill="#4285f4"/>
+  <text x="105" y="180" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">Pre-Filter</text>
+  <text x="105" y="197" text-anchor="middle" font-size="10.5" fill="#ffffff">确定性预过滤</text>
+
+  <rect x="170" y="150" width="100" height="72" rx="8" fill="#34a853"/>
+  <text x="220" y="180" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">Stage1</text>
+  <text x="220" y="197" text-anchor="middle" font-size="10.5" fill="#ffffff">全量粗筛 ×3</text>
+
+  <rect x="285" y="150" width="100" height="72" rx="8" fill="#34a853"/>
+  <text x="335" y="180" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">Stage1.5</text>
+  <text x="335" y="197" text-anchor="middle" font-size="10.5" fill="#ffffff">校准</text>
+
+  <rect x="400" y="150" width="100" height="72" rx="8" fill="#34a853"/>
+  <text x="450" y="180" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">Stage2</text>
+  <text x="450" y="197" text-anchor="middle" font-size="10.5" fill="#ffffff">Listwise 精排</text>
+
+  <rect x="515" y="150" width="100" height="72" rx="8" fill="#f9ab00"/>
+  <text x="565" y="180" text-anchor="middle" font-size="13" font-weight="700" fill="#202124">Stage2.5</text>
+  <text x="565" y="197" text-anchor="middle" font-size="10.5" fill="#202124">重排 ±20</text>
+
+  <rect x="630" y="150" width="100" height="72" rx="8" fill="#ea4335"/>
+  <text x="680" y="180" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">Post-Judge</text>
+  <text x="680" y="197" text-anchor="middle" font-size="10.5" fill="#ffffff">确定性后处理</text>
+
+  <rect x="745" y="150" width="100" height="72" rx="8" fill="#a142f4"/>
+  <text x="795" y="180" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">Verify</text>
+  <text x="795" y="197" text-anchor="middle" font-size="10.5" fill="#ffffff">12 契约</text>
+
+  <!-- main flow arrows -->
+  <line x1="155" y1="186" x2="168" y2="186" stroke="#5f6368" stroke-width="1.6" marker-end="url(#ah)"/>
+  <line x1="270" y1="186" x2="283" y2="186" stroke="#5f6368" stroke-width="1.6" marker-end="url(#ah)"/>
+  <line x1="385" y1="186" x2="398" y2="186" stroke="#5f6368" stroke-width="1.6" marker-end="url(#ah)"/>
+  <line x1="500" y1="186" x2="513" y2="186" stroke="#5f6368" stroke-width="1.6" marker-end="url(#ah)"/>
+  <line x1="615" y1="186" x2="628" y2="186" stroke="#5f6368" stroke-width="1.6" marker-end="url(#ah)"/>
+  <line x1="730" y1="186" x2="743" y2="186" stroke="#5f6368" stroke-width="1.6" marker-end="url(#ah)"/>
+
+  <!-- output -->
+  <line x1="795" y1="222" x2="795" y2="268" stroke="#5f6368" stroke-width="1.6" marker-end="url(#ah)"/>
+  <rect x="715" y="270" width="170" height="50" rx="8" fill="#202124"/>
+  <text x="800" y="300" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">最终评分报告</text>
+
+  <!-- LLM failover -->
+  <rect x="55" y="362" width="520" height="58" rx="8" fill="#e8f0fe" stroke="#4285f4" stroke-width="1.5"/>
+  <text x="315" y="385" text-anchor="middle" font-size="13" font-weight="700" fill="#1a73e8">LLMClient 降级链</text>
+  <text x="315" y="405" text-anchor="middle" font-size="10.5" fill="#202124">friday → sub2api → nvidia → agnes · 失败自动降级 · served_note 标注</text>
+
+  <!-- privacy -->
+  <rect x="590" y="362" width="300" height="58" rx="8" fill="#fce8e6" stroke="#ea4335" stroke-width="1.5"/>
+  <text x="740" y="385" text-anchor="middle" font-size="12.5" font-weight="700" fill="#c5221f">🔒 behavioral_profile.json</text>
+  <text x="740" y="405" text-anchor="middle" font-size="10.5" fill="#202124">本地推理 · 永不出库</text>
+
+  <!-- LLM dashed connectors -->
+  <line x1="220" y1="222" x2="220" y2="362" stroke="#4285f4" stroke-width="1.4" stroke-dasharray="4 3"/>
+  <line x1="335" y1="222" x2="335" y2="362" stroke="#4285f4" stroke-width="1.4" stroke-dasharray="4 3"/>
+  <line x1="450" y1="222" x2="450" y2="362" stroke="#4285f4" stroke-width="1.4" stroke-dasharray="4 3"/>
+  <line x1="565" y1="222" x2="565" y2="362" stroke="#4285f4" stroke-width="1.4" stroke-dasharray="4 3"/>
+</svg>
