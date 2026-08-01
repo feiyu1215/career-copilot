@@ -3,12 +3,15 @@ name: CI
 on:
   push:
   pull_request:
+  # 每日凌晨跑一次，捕获静默回归（依赖/配置漂移、golden cases 结构损坏）
+  schedule:
+    - cron: "17 3 * * *"
 
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.13"
@@ -18,5 +21,43 @@ jobs:
         run: python -m py_compile scripts/*.py tools/*.py
       - name: Run tests
         run: python -m pytest tests/ -q
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install ruff
+        run: pip install ruff
+      - name: Ruff check (E/F/W/I，见 pyproject.toml [tool.ruff])
+        run: ruff check scripts tools tests
+
+  types:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install deps + mypy
+        run: pip install -r requirements.txt mypy
+      # 仅对 pyproject.toml 中 disallow_untyped_defs=true 的核心模块做类型门禁
+      - name: Mypy (core modules)
+        run: mypy scripts/smart_score.py scripts/llm_client.py
+
+  contracts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install deps
+        run: pip install -r requirements.txt
+      # 框架模式：仅加载 golden cases 做结构自检，无需 LLM key，CI 友好
+      - name: Golden cases structural self-check
+        run: python evals/run_accuracy_eval.py --check
       - name: Security guards
         run: python tools/security_guards.py
