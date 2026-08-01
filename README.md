@@ -1,7 +1,7 @@
 # Career Copilot
 
 > 求职全链路 AI 评分引擎与陪练 Skill —— 把「岗位匹配 / 简历优化 / 面试准备 / 职业记忆」做成一条**可验证、可降级、可审计**的六阶段评分 pipeline。
-> *Career Copilot: a verifiable, degradable, auditable 6-stage scoring pipeline for end-to-end job-search assistance.*
+> *Career Copilot: a verifiable, resilient, auditable 6-stage scoring pipeline for end-to-end job-search assistance.*
 
 > 运行时入口是 `SKILL.md`（Agent 加载它即为事实源）。本文件是给访客/面试官看的工程说明。
 
@@ -131,8 +131,7 @@ career-copilot/
 
 ## English
 
-> An end-to-end AI scoring engine and coaching Skill for job hunting — turning *role matching / resume optimization / interview prep / career memory* into a single **verifiable, degradable, auditable** 6-stage scoring pipeline.
-> *Career Copilot: a verifiable, degradable, auditable 6-stage scoring pipeline for end-to-end job-search assistance.*
+> **Career Copilot** — an end-to-end AI scoring engine and coaching Skill for job hunting, turning *role matching / resume optimization / interview prep / career memory* into a single **verifiable, resilient, auditable** 6-stage scoring pipeline.
 
 > The runtime entry point is `SKILL.md` (loaded by the Agent as the source of truth). This file is the engineering write-up for visitors and contributors.
 
@@ -145,7 +144,7 @@ The model is responsible for *judgment*; the code is responsible for *constraint
 
 | Stage | Responsibility | Model / Temp | Key design |
 |---|---|---|---|
-| **Pre-Filter** | direction-term detection, English hard gate, years extraction, spam/fraud signals, drop too-short JD | pure deterministic | spends no tokens; cuts obviously-irrelevant JD first |
+| **Pre-Filter** | direction-term detection, English hard gate, years extraction, spam/fraud signals, drop too-short job descriptions (JDs) | pure deterministic | spends no tokens; cuts obviously-irrelevant JDs first |
 | **Stage1 coarse** | full-volume scoring; 3 variants `general/strict/lenient` take the consensus | cheap model · `temp=0.0` | `direction_anchor` weights 40%; 3 variants reduce single-model variance |
 | **Stage1.5 calibration** | dynamically generate "discriminative knowledge" to aid later fine-ranking | LLM | calibration; reduces Stage2 misjudgment |
 | **Stage2 fine-rank** | Listwise grouped rerank + risk tagging | stronger model | grouped comparison; outputs risk labels |
@@ -161,7 +160,7 @@ The model is responsible for *judgment*; the code is responsible for *constraint
 2. **Resume optimization** — generates resume rewrite suggestions and drafts based on match gaps.
 3. **Interview prep** — generates interview questions and coaching material for target roles.
 4. **Career memory** — `career_log.jsonl` accumulates historical applications/interview trails, reusable across sessions.
-5. **Interview-calibration loop** — `history_calibration` extracts `boost_terms / low_pass_directions` from reviews and applies **deterministic +/- scoring** (hit +4 cap 12, direction-mismatch −8 cap 12), off by default, zero LLM calls.
+5. **Interview-calibration loop** — `history_calibration` extracts `boost_terms / low_pass_directions` from reviews and applies **deterministic +/- scoring** (each hit +4, total capped at 12; each direction mismatch −8, total capped at 12), off by default, zero LLM calls.
 6. **Reliability engineering** — multi-provider failover, circuit breaker, retry classification, semantic cache; see §3.
 
 ---
@@ -187,7 +186,7 @@ The model is responsible for *judgment*; the code is responsible for *constraint
 - **Static contracts**: `verify_output.py` runs 12 assertions after every output; CI can block non-compliant output.
 - **Fetch quality gate**: `run_pipeline.py`'s `quality_gate_check` (Phase 4.3) is report-only by default, or `--quality-gate-fail` to hard-block low-quality fetches.
 - **Evaluation artifacts**: `evals/transcripts/` keeps desensitized blind-eval / review transcripts for regression comparison.
-- **Golden cases + cross-model blind eval**: 10 golden cases (`evals/golden/case_001..010.json`) are human/AI-annotated with `expected_score` / `expected_tier` following the tier rule (90+ / 85–89 = A, 72–84 = B, <72 = C). The cross-model blind-eval methodology is documented in `evals/CROSS_MODEL_BLIND_EVAL.md` — run `evals/run_accuracy_eval.py` across the provider chain (friday / sub2api / nvidia / agnes) and compare independently. Gate thresholds: MAE≤8, ρ≥0.85, TierAcc≥80%, Outlier≤10%.
+- **Golden cases + cross-model blind eval**: 10 golden cases (`evals/golden/case_001..010.json`) are annotated with `expected_score` / `expected_tier` following the tier rule (90+ / 85–89 = A, 72–84 = B, <72 = C). The cross-model blind-eval methodology is documented in `evals/CROSS_MODEL_BLIND_EVAL.md` — run `evals/run_accuracy_eval.py` across the provider chain (friday / sub2api / nvidia / agnes) and compare results independently. Gate thresholds (verified by running with configured keys; results are filled in after evaluation, never fabricated): MAE≤8, ρ≥0.85, TierAcc≥80%, Outlier≤10%.
 
 ---
 
