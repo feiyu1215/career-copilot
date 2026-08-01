@@ -5,8 +5,8 @@
 import json
 import os
 import sys
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 
 import pytest
 
@@ -15,10 +15,16 @@ SCRIPTS = ROOT / "scripts"
 if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
-import competitiveness_tracker as ct
-from competitiveness_tracker import (build_snapshot, events_up_to, compute_delta,
-                                     render_radar_overlay, load_store, save_store,
-                                     recompute_after_event, map_to_dimensions)
+import competitiveness_tracker as ct  # noqa: E402
+from competitiveness_tracker import (  # noqa: E402
+    build_snapshot,
+    compute_delta,
+    load_store,
+    map_to_dimensions,
+    recompute_after_event,
+    render_radar_overlay,
+    save_store,
+)
 
 
 def _write_log(path: Path, events: list[dict]) -> None:
@@ -184,8 +190,9 @@ def test_career_log_append_hook_triggers_recompute(tmp_path, monkeypatch):
         competitiveness_store=str(store),
     )
     loaded = load_store(str(store))
-    assert "2026-07" in loaded
-    assert loaded["2026-07"]["n_interviews"] == 1
+    now_period = f"{datetime.now():%Y-%m}"
+    assert now_period in loaded
+    assert loaded[now_period]["n_interviews"] == 1
     # 真实日志确实写了事件
     assert log.exists() and "interview_done" in log.read_text(encoding="utf-8")
 
@@ -213,7 +220,9 @@ def test_generate_report_section_renders(tmp_path):
 
 
 def test_agnes_enrich_fallback_when_call_fails(monkeypatch):
-    import sys, types
+    import sys
+    import types
+
     import competitiveness_tracker as ct
 
     class FakeClient:
