@@ -13,16 +13,16 @@ verify_output.py — scored_results.json 确定性断言检查
     1 = 存在失败断言（详情打印到 stdout，含契约号 [C#]）
 """
 
+import argparse
 import json
 import sys
-import argparse
 from pathlib import Path
 
 # 关键约束以 config/constraints.yaml 为单一事实源（见 scripts/config_loader.py）
 _SCRIPTS_DIR = Path(__file__).resolve().parent
 if str(_SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(_SCRIPTS_DIR))
-from config_loader import load_constraints
+from config_loader import load_constraints  # noqa: E402
 
 _CONSTRAINTS = load_constraints()
 
@@ -215,7 +215,7 @@ def main():
         recs = data["recommendations"]
         total = len(recs["tier_A"]) + len(recs["tier_B"]) + len(recs["tier_C"])
         pj = data["pipeline"].get("post_judge", {})
-        print(f"✅ 全部通过 (12 项契约检查)")
+        print("✅ 全部通过 (12 项契约检查)")
         print(f"   A={len(recs['tier_A'])} B={len(recs['tier_B'])} C={len(recs['tier_C'])} "
               f"Total={total} Penalties={pj.get('penalties_applied', '?')}")
         print(f"   真实评估={counts.get('real', '?')} fallback={counts.get('fallback', '?')} "

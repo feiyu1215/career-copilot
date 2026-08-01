@@ -3,7 +3,7 @@ import sys
 
 sys.path.insert(0, "scripts")
 
-from smart_score import load_config, DEFAULT_CONFIG_PATH  # noqa: E402
+from smart_score import DEFAULT_CONFIG_PATH, load_config  # noqa: E402
 
 
 def test_load_config_falls_back_to_defaults_when_missing():
@@ -27,8 +27,8 @@ def test_load_config_reads_default_yaml():
 
 def test_load_config_merge_overrides_defaults():
     # 用临时文件验证深度合并（file_cfg 覆盖 defaults）
-    import tempfile
     import os
+    import tempfile
     import textwrap
 
     content = textwrap.dedent("""

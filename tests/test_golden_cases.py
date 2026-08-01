@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 """Golden Cases（3.1）结构与覆盖矩阵自检（离线，无 LLM）。"""
-from pathlib import Path
 import json
+from pathlib import Path
+
 import pytest
 
 GOLDEN = Path(__file__).resolve().parents[1] / "evals" / "golden"

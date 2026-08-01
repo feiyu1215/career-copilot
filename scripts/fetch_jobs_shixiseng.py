@@ -23,8 +23,15 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from job_common import (  # noqa: E402
-    save_jobs_format, health_check, ScrapeHealth, acquire_portal_throttle,
-    parse_html_tree, html_iter, html_find_anchors, html_first_anchor, html_text_by_class,
+    ScrapeHealth,
+    acquire_portal_throttle,
+    health_check,
+    html_find_anchors,
+    html_first_anchor,
+    html_iter,
+    html_text_by_class,
+    parse_html_tree,
+    save_jobs_format,
 )
 
 BASE = "https://www.shixiseng.com"

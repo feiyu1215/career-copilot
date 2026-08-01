@@ -7,17 +7,16 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
 
 from post_judge import (
-    detect_english_requirement,
-    apply_english_penalty,
-    detect_core_team,
+    DEFAULT_CONFIG,
     apply_core_team_penalty,
-    detect_tech_strong,
+    apply_english_penalty,
     apply_tech_penalty,
+    detect_core_team,
+    detect_english_requirement,
+    detect_tech_strong,
     enforce_distribution,
     post_judge,
-    DEFAULT_CONFIG,
 )
-
 
 # ============================================================
 # detect_english_requirement

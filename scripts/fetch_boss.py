@@ -50,15 +50,13 @@ import re
 import shutil
 import subprocess
 import sys
-import tempfile
 import time
 import urllib.parse
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable, Protocol, runtime_checkable
 
-from job_common import ScrapeHealth, health_check, acquire_portal_throttle
-
+from job_common import ScrapeHealth, acquire_portal_throttle, health_check
 
 # 默认刹车参数（agent-discipline）
 DEFAULT_MAX_JOBS = 50
@@ -144,10 +142,8 @@ def with_rate_limit_retry(
     两种后端的限流信号形态不同：前者看信封 error.code / 文本，后者看 HTML 风控页）。
     sleep 默认 time.sleep，便于测试时替换为无阻塞桩。
     """
-    last_result = None
     for attempt in range(1, max_attempts + 1):
         result, rate_limited = attempt_fetch()
-        last_result = result
         if not rate_limited:
             return result
         if attempt < max_attempts:

@@ -20,8 +20,6 @@ import tempfile
 from pathlib import Path
 from types import SimpleNamespace
 
-import pytest
-
 sys.path.insert(0, "scripts")
 
 import smart_score  # noqa: E402

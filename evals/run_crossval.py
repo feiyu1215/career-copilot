@@ -15,10 +15,9 @@
     Fleiss' κ ≥ 0.6（中等一致）视为管线可信。
     低一致样本（Judge 间档位不完全一致）标记 needs_human_review。
 """
-import json
-import sys
 import argparse
 import itertools
+import sys
 from pathlib import Path
 
 # scipy 是软依赖：仅 compute_crossval 的 Spearman ρ 用到。

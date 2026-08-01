@@ -21,10 +21,10 @@
     Tier 翻转数 ≤ 2（且不得出现 A↔D 跳变）
     Outlier 率（|Δtotal| > 10 的 job 占比）≤ 10%
 """
-import json
-import sys
 import argparse
 import datetime
+import json
+import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent

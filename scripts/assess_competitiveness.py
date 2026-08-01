@@ -33,19 +33,16 @@ assess_competitiveness.py — 对 A/B 档岗位进行竞争力评估
 
 from __future__ import annotations
 
-import os
-import sys
-import json
-import asyncio
 import argparse
+import asyncio
+import json
+import sys
 from pathlib import Path
-from typing import Optional
 
 # 共享 LLM 客户端
 SCRIPT_DIR = Path(__file__).parent
 sys.path.insert(0, str(SCRIPT_DIR))
-from llm_client import LLMClient, LLMCallFailed  # noqa: E402
-
+from llm_client import LLMCallFailed, LLMClient  # noqa: E402
 
 ASSESSMENT_SYSTEM = """你是一位资深求职策略顾问，帮助候选人评估每个目标岗位的"投递难度"和"录用概率"。
 
@@ -135,7 +132,6 @@ async def assess_single(client, candidate_summary: str, profile: dict,
         含 positioning/confidence/gaps/interview_risk/reasoning 的评估字典，
         同时透传 job_id/title/tier/score/department/location。
     """
-    hard_negatives = profile.get("hard_negatives", [])
 
     user_prompt = f"""## 候选人摘要
 {candidate_summary}
@@ -250,7 +246,7 @@ async def generate_strategy(client, assessments: list[dict],
             max_tokens=1500,
         )
     except LLMCallFailed:
-        print(f"  ⚠ 投递策略 LLM 调用失败，返回空策略", file=sys.stderr)
+        print("  ⚠ 投递策略 LLM 调用失败，返回空策略", file=sys.stderr)
         return {"strategy_summary": "策略生成失败（LLM 调用失败）",
                 "recommended_order": [], "preparation_tips": [], "risk_note": ""}
 
@@ -325,13 +321,13 @@ async def run(args):
     total = stretch_count + match_count + safe_count
     if total > 0 and safe_count == 0 and len(tier_a) >= 3:
         print(f"\n  ⚠ 分布告警: safe=0 但 A 档有 {len(tier_a)} 个岗位。")
-        print(f"    可能原因: safe 定义对当前候选人过于严苛。建议检查 A 档高分岗的 gaps 是否仅为加分项缺失。")
+        print("    可能原因: safe 定义对当前候选人过于严苛。建议检查 A 档高分岗的 gaps 是否仅为加分项缺失。")
     if total > 0 and stretch_count / total > 0.8:
         print(f"\n  ⚠ 分布告警: stretch 占比 {stretch_count/total:.0%}，分布严重偏斜。")
-        print(f"    建议人工复核 A 档高分岗位是否合理标为 stretch。")
+        print("    建议人工复核 A 档高分岗位是否合理标为 stretch。")
 
     # 生成策略
-    print(f"\n[2/2] 生成投递策略...")
+    print("\n[2/2] 生成投递策略...")
     strategy = await generate_strategy(client, assessments, candidate_summary)
     print(f"  策略: {strategy.get('strategy_summary', '?')}")
 
@@ -360,7 +356,7 @@ async def run(args):
     print(f"\n{strategy.get('strategy_summary', '')}")
 
     if strategy.get("recommended_order"):
-        print(f"\n推荐投递顺序：")
+        print("\n推荐投递顺序：")
         for item in strategy["recommended_order"][:8]:
             pos_emoji = {"stretch": "🔴", "match": "🟢", "safe": "🔵"}.get(
                 item.get("positioning", ""), "⚪")

@@ -18,10 +18,10 @@ verify_lens.py — 对白 transcript 的软契约（lens）确定性检查
     1 = 存在硬失败（如非法 JSONL / 缺字段），或 --strict 下存在 WARNING
 """
 
+import argparse
 import json
 import re
 import sys
-import argparse
 from pathlib import Path
 
 # 来源标签：断言必须携带其一，否则视为未标注来源

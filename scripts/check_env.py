@@ -114,8 +114,8 @@ def detect_latex_engine() -> str | None:
 def _check_network_connectivity():
     """检测 LLM Provider 的网络连通性（HEAD 请求，5s 超时）。"""
     import os
-    import urllib.request
     import urllib.error
+    import urllib.request
 
     providers = {
         "friday": os.environ.get(

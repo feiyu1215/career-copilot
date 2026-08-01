@@ -20,18 +20,16 @@ gen_profile.py — 从简历文本自动生成 boundary_profile.json + candidate
 
 from __future__ import annotations
 
-import os
-import sys
-import json
-import asyncio
 import argparse
+import asyncio
+import json
+import sys
 from pathlib import Path
 
 # 共享 LLM 客户端
 SCRIPT_DIR = Path(__file__).parent
 sys.path.insert(0, str(SCRIPT_DIR))
 from llm_client import LLMClient  # noqa: E402
-
 
 # ============================================================
 # 简历读取
@@ -309,12 +307,12 @@ async def run(args):
     print(f"  core_experiences: {len(profile.get('core_experiences', []))} 个")
     print(f"  hard_negatives: {len(profile.get('hard_negatives', []))} 个")
     print(f"  english_level: {profile.get('english_evidence', {}).get('level', '?')}")
-    print(f"\n  direction_anchors（方向锚点）:")
+    print("\n  direction_anchors（方向锚点）:")
     for anchor in profile.get("direction_anchors", []):
         print(f"    - {anchor}")
     if profile.get("core_team_signals"):
         print(f"  core_team_signals: {profile.get('core_team_signals')}")
-    print(f"\n  ⚠️  请确认以上方向锚点是否准确。如有偏差请手动修正 profile 文件。")
+    print("\n  ⚠️  请确认以上方向锚点是否准确。如有偏差请手动修正 profile 文件。")
 
     summary_path = output_dir / "candidate_summary.txt"
     summary_path.write_text(summary, encoding="utf-8")

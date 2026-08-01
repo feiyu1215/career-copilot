@@ -17,18 +17,16 @@ post_judge.py — 确定性后处理模块
 
 from __future__ import annotations
 
-import re
-import sys
 import json
-from typing import Optional
+import sys
 from pathlib import Path
+from typing import Optional
 
 # 关键约束以 config/constraints.yaml 为单一事实源（见 scripts/config_loader.py）
 _SCRIPTS_DIR = Path(__file__).resolve().parent
 if str(_SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(_SCRIPTS_DIR))
-from config_loader import load_constraints
-
+from config_loader import load_constraints  # noqa: E402
 
 # ============================================================
 # 可配置参数（默认值 = 当前硬编码行为，可通过 pipeline.yaml 覆盖）
@@ -280,7 +278,7 @@ def enforce_distribution(jobs: list[dict], cfg: Optional[dict] = None) -> list[d
         if j["job_id"] in demote_ids:
             j = {**j, "tier": "B"}
             j.setdefault("post_penalties", [])
-            j["post_penalties"].append(f"分布约束: A档超额, 降为B档")
+            j["post_penalties"].append("分布约束: A档超额, 降为B档")
         result.append(j)
 
     return result

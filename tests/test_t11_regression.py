@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """T11 —— 版本间回归对比的单元测试 + 框架 CLI 自检。"""
 import os
-import sys
 import subprocess
+import sys
 
 import pytest
 

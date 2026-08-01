@@ -4,10 +4,9 @@
 FRIDAY_API_KEY / FRIDAY_BASE_URL（实际不存在），导致显式传入的 key 为 None、回退到
 llm_client 的 import-time 快照，脆弱点未被真正规避。
 """
+import importlib.util
 import sys
 from pathlib import Path
-
-import importlib.util
 
 EVALS_DIR = Path(__file__).resolve().parent.parent / "evals"
 if str(EVALS_DIR) not in sys.path:

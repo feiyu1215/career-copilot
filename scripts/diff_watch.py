@@ -30,20 +30,20 @@ diff_watch.py — 增量监测：检测新增岗位并只对新增部分评分
 
 from __future__ import annotations
 
-import json
-import sys
-import os
 import argparse
 import asyncio
-from pathlib import Path
+import json
+import os
+import sys
 from datetime import datetime
 from difflib import SequenceMatcher
+from pathlib import Path
 
 # 添加 scripts 目录到路径
 SCRIPT_DIR = Path(__file__).parent
 sys.path.insert(0, str(SCRIPT_DIR))
 
-from smart_score import parse_jobs_raw, run_pipeline
+from smart_score import parse_jobs_raw, run_pipeline  # noqa: E402
 
 
 def normalize_title(title: str) -> str:
@@ -142,7 +142,7 @@ async def run(args):
                     except (ValueError, TypeError):
                         print(f"\n📅 上次监测: {last_date}")
                 else:
-                    print(f"\n📅 首次运行，建立 baseline...")
+                    print("\n📅 首次运行，建立 baseline...")
             except (json.JSONDecodeError, KeyError):
                 pass
 
@@ -159,7 +159,7 @@ async def run(args):
     trend_store = getattr(args, "trend_store", None)
     if trend_store:
         try:
-            from trend_analyzer import build_snapshot, append_snapshot
+            from trend_analyzer import append_snapshot, build_snapshot
             snap = build_snapshot(current_jobs, date_str=getattr(args, "date", None))
             store = append_snapshot(trend_store, snap)
             print(f"[trend] 已累积市场快照 {snap['date']}（{snap['total']} 岗，"
@@ -186,20 +186,20 @@ async def run(args):
         except Exception as e:
             print(f"[first_seen] 记录失败（跳过）: {e}")
 
-    print(f"\n差异分析:")
+    print("\n差异分析:")
     print(f"  新增岗位: {len(new_jobs)}")
     print(f"  下架岗位: {len(removed_jobs)}")
     print(f"  不变岗位: {len(current_jobs) - len(new_jobs)}")
 
     if new_jobs:
-        print(f"\n新增岗位标题:")
+        print("\n新增岗位标题:")
         for j in new_jobs[:15]:
             print(f"  + {j['title']}")
         if len(new_jobs) > 15:
             print(f"  ... 还有 {len(new_jobs) - 15} 个")
 
     if removed_jobs:
-        print(f"\n下架岗位标题:")
+        print("\n下架岗位标题:")
         for j in removed_jobs[:10]:
             print(f"  - {j['title']}")
 
@@ -312,7 +312,7 @@ async def run(args):
 
     if tier_a_new > 0:
         a_jobs = score_results.get("recommendations", {}).get("tier_A", [])
-        print(f"\n  新增 A 档岗位：")
+        print("\n  新增 A 档岗位：")
         for j in a_jobs:
             print(f"    ★ [{j.get('score', 0):.0f}] {j.get('title', '?')}")
 

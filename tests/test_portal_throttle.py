@@ -13,8 +13,11 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts"))
 
 from job_common import (
-    parse_rate_limit, RateLimiter, make_portal_limiter,
-    acquire_portal_throttle, reset_portal_throttles,
+    RateLimiter,
+    acquire_portal_throttle,
+    make_portal_limiter,
+    parse_rate_limit,
+    reset_portal_throttles,
 )
 
 

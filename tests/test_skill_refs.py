@@ -21,8 +21,6 @@ T9 —— SKILL.md 分层完整性校验。
 import os
 import re
 
-import pytest
-
 # tests/ -> repo root
 REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 SKILL_MD = os.path.join(REPO_ROOT, "SKILL.md")

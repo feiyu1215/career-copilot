@@ -6,7 +6,7 @@ import sys
 
 sys.path.insert(0, "scripts")
 
-from log_utils import get_logger, JsonFormatter  # noqa: E402
+from log_utils import JsonFormatter, get_logger  # noqa: E402
 
 
 def test_get_logger_emits_valid_json_with_extra_data():

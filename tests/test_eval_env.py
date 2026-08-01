@@ -5,12 +5,9 @@
 - scholar_dotenv_path 受 SCHOLAR_DOTENV 覆盖、默认开发机绝对路径
 - load_provider_env 按覆盖路径加载 scholar .env（可移植性）
 """
-import os
-import sys
-from pathlib import Path
-
 import importlib.util
-import pytest
+import os
+from pathlib import Path
 
 SCRIPT = Path(__file__).resolve().parent.parent / "evals" / "eval_env.py"
 spec = importlib.util.spec_from_file_location("eval_env_test", SCRIPT)

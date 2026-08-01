@@ -20,13 +20,14 @@ generate_report.py — 从 scored_results.json 生成交互式 HTML 报告
 
 from __future__ import annotations
 
+import argparse
+import html
 import json
 import sys
-import argparse
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
+
 from report_assets import REPORT_CSS, REPORT_JS
-import html
 
 
 def _esc(value) -> str:
@@ -38,8 +39,13 @@ def render_competitiveness_section(store_path: str, career_log_path: str = None,
     """Phase 8.2：「竞争力动态」段落（delta 报告 + 雷达图叠加）。无数据返回空串。
     provider 给定（如 "agnes"）时叠加教练式自然语言叙述；失败静默回退，不影响确定性报告。"""
     try:
-        from competitiveness_tracker import (load_store, previous_period, compute_delta,
-                                             render_delta_report, render_radar_overlay)
+        from competitiveness_tracker import (
+            compute_delta,
+            load_store,
+            previous_period,
+            render_delta_report,
+            render_radar_overlay,
+        )
         store = load_store(store_path)
         if not store:
             return ""
@@ -97,7 +103,7 @@ def build_optional_sections(*, history_store=None, trend_store=None,
     trend_html = None
     if trend_store:
         try:
-            from trend_analyzer import load_store, analyze_trend, render_trend_html
+            from trend_analyzer import analyze_trend, load_store, render_trend_html
             trend_html = render_trend_html(analyze_trend(load_store(trend_store)))
         except Exception as e:
             print(f"  ⚠ 市场趋势洞察加载失败，跳过: {e}", file=sys.stderr)
@@ -154,9 +160,6 @@ def generate_html(data: dict, profile: dict, decision_context: dict = None,
     total_jobs = pipeline.get("stage1", {}).get("total_jobs", 0)
     top_k = pipeline.get("stage1", {}).get("top_k", 0)
     direction_anchor = pipeline.get("direction_anchor", direction_text)
-
-    # Stage 1 全量分数分布（用于漏斗可视化）
-    s1_scores = data.get("stage1_all_scores", [])
 
     # 历史转化漏斗（真实投递反馈，Phase 6.1）
     history_funnel_html = render_history_funnel(history_funnel)
@@ -413,7 +416,7 @@ def render_job_card(job: dict, tier: str, positioning_map: dict = None, now=None
             {f'<div class="job-meta">{meta_text}</div>' if meta_text else ''}
             <div class="tier-label" style="color: {color};">{label}</div>
             {cond_tags_html}
-            {f'<span class="badge-new">🆕 本周新增</span>' if job.get("is_new") else ''}
+            {'<span class="badge-new">🆕 本周新增</span>' if job.get("is_new") else ''}
             {render_timing_badge(job, now=now) if job.get("first_seen_at") else ''}
           </div>
           <div class="card-body">
@@ -457,11 +460,11 @@ def main():
 
     if not input_path.exists():
         print(f"✗ 输入文件不存在: {input_path}", file=sys.stderr)
-        print(f"  请先运行 smart_score.py 生成 scored_results.json", file=sys.stderr)
+        print("  请先运行 smart_score.py 生成 scored_results.json", file=sys.stderr)
         sys.exit(1)
     if not profile_path.exists():
         print(f"✗ 画像文件不存在: {profile_path}", file=sys.stderr)
-        print(f"  请先运行 gen_profile.py 生成 boundary_profile.json", file=sys.stderr)
+        print("  请先运行 gen_profile.py 生成 boundary_profile.json", file=sys.stderr)
         sys.exit(1)
 
     # 加载数据（带 JSON 解析保护）
@@ -479,8 +482,8 @@ def main():
 
     # 结构基础校验
     if "recommendations" not in data:
-        print(f"✗ scored_results.json 缺少 'recommendations' 字段", file=sys.stderr)
-        print(f"  该文件可能不是 smart_score.py 的有效输出，请检查", file=sys.stderr)
+        print("✗ scored_results.json 缺少 'recommendations' 字段", file=sys.stderr)
+        print("  该文件可能不是 smart_score.py 的有效输出，请检查", file=sys.stderr)
         sys.exit(1)
 
     # 加载 decision_context（可选）
@@ -492,7 +495,7 @@ def main():
                 decision_context = json.loads(dc_path.read_text(encoding="utf-8"))
                 print(f"  已加载投递策略: {dc_path}")
             except json.JSONDecodeError:
-                print(f"  ⚠ decision_context.json 解析失败，跳过", file=sys.stderr)
+                print("  ⚠ decision_context.json 解析失败，跳过", file=sys.stderr)
 
     # Phase 9.2：贯通三智能段（历史漏斗 / 趋势洞察 / 竞争力动态），各自失败静默跳过
     history_funnel, trend_html, comp_html = build_optional_sections(

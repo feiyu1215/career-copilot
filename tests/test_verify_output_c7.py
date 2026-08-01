@@ -19,7 +19,6 @@ def _build(a_scores):
     a = [_item(f"a{i}", f"A{i}", s, "A") for i, s in enumerate(a_scores)]
     b = [_item("b0", "B0", 72, "B"), _item("b1", "B1", 73, "B")]
     c = [_item("c0", "C0", 68, "C")]
-    items = a + b + c
     return {
         "pipeline": {s: {} for s in ["stage1", "stage1_5", "stage2", "stage2_5", "post_judge", "direction_anchor"]},
         "summary": {"tier_A": len(a), "tier_B": len(b), "tier_C": len(c)},

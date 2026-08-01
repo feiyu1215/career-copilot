@@ -1,7 +1,7 @@
 """Provider 自动降级链。当主 Provider 连续失败时自动切换到备用。"""
-import time
 import sys
-from dataclasses import dataclass, field
+import time
+from dataclasses import dataclass
 
 
 @dataclass

@@ -21,7 +21,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import re
 from collections import Counter
 from datetime import date, datetime, timedelta
 from pathlib import Path

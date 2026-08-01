@@ -1,4 +1,6 @@
-import json, glob, os
+import glob
+import json
+import os
 
 # (expected_score, expected_tier, annotator) from human review
 PATCH = {

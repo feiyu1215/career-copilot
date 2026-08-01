@@ -23,15 +23,15 @@ verify_ats.py — 简历 PDF 的 ATS 文本层与硬性不变量检查
 
 from __future__ import annotations
 
+import argparse
 import re
 import sys
-import argparse
 from pathlib import Path
 
 _SCRIPTS_DIR = Path(__file__).resolve().parent
 if str(_SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(_SCRIPTS_DIR))
-from config_loader import load_constraints
+from config_loader import load_constraints  # noqa: E402
 
 _CONSTRAINTS = load_constraints()
 
@@ -168,10 +168,7 @@ def run_checks(
     客观不变量（联系方式/乱码）为硬失败 [A#]；页数 [A1] 仅对 PDF 校验（docx 无固定页）；
     关键词覆盖为 advisory [W-A]。
     """
-    failures: list[str] = []
     warnings: list[str] = []
-    cfg = constraints or _CONSTRAINTS
-    ats = cfg.get("ats", {})
 
     if not Path(pdf_path).exists():
         return [f"[A0] 文件不存在: {pdf_path}"], warnings

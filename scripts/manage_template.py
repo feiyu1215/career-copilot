@@ -36,7 +36,7 @@ _SCRIPTS_DIR = Path(__file__).resolve().parent
 if str(_SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(_SCRIPTS_DIR))
 
-from build_cv import compile_tex, find_latex_engine, _escape  # noqa: E402
+from build_cv import _escape, compile_tex, find_latex_engine  # noqa: E402
 
 # 模板仓库：存放用户自管 LaTeX 模板 + registry.json（均 gitignore）
 TEMPLATES_DIR = Path(__file__).resolve().parent.parent / "templates"
@@ -214,7 +214,7 @@ def main():
     p_add.add_argument("--name", required=True, help="模板名 [A-Za-z0-9_-]+")
     p_add.add_argument("--path", required=True, help="模板 .tex 源路径")
 
-    p_list = sub.add_parser("list", help="列出已注册模板")
+    sub.add_parser("list", help="列出已注册模板")
 
     p_rm = sub.add_parser("remove", help="删除模板")
     p_rm.add_argument("--name", required=True)

@@ -12,7 +12,6 @@ test_e2e_draft.py — Phase 3.3 端到端回归测试（其二）：生成 → �
 """
 import asyncio
 import sys
-import types
 from pathlib import Path
 
 import pytest
@@ -21,11 +20,10 @@ REPO = Path(__file__).resolve().parents[1]
 if str(REPO / "scripts") not in sys.path:
     sys.path.insert(0, str(REPO / "scripts"))
 
-import llm_client          # noqa: E402
-import manage_template     # noqa: E402
-import build_cv            # noqa: E402
+import build_cv  # noqa: E402
+import llm_client  # noqa: E402
+import manage_template  # noqa: E402
 from drafter_reviewer import DrafterReviewer  # noqa: E402
-
 
 # 最小完整 LaTeX 模板（ASCII，确保 lualatex 干净编译；本测试关注「链路」而非 CJK 渲染）
 DRAFT_TEMPLATE = r"""\documentclass[11pt,a4paper]{article}

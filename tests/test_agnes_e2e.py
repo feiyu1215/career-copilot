@@ -22,7 +22,7 @@ sys.path.insert(0, "scripts")
 sys.path.insert(0, "evals")
 import eval_env  # noqa: E402
 import llm_client  # noqa: E402
-from llm_client import LLMClient, PROVIDERS  # noqa: E402
+from llm_client import PROVIDERS, LLMClient  # noqa: E402
 
 captured: dict = {}
 

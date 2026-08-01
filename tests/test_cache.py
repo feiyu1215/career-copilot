@@ -6,9 +6,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
 
-from cache import SemanticCache, cache_key, default_cache
 import llm_client
-
+from cache import SemanticCache, cache_key
 
 # ──────────────────────────────────────────────
 # 1) SemanticCache 纯逻辑

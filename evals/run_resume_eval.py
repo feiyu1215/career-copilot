@@ -281,6 +281,7 @@ def run_drafts(drafts_dir: Path, constraints: dict, provider: str | None,
 
 def run_generate(constraints: dict, provider: str, page_check: bool = False) -> list[dict]:
     import asyncio
+
     from scripts.drafter_reviewer import DrafterReviewer
     results = []
     for case in load_cases():

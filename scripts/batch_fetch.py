@@ -22,12 +22,12 @@ from pathlib import Path
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from job_common import (  # noqa: E402
-    load_portals,
-    enabled_portals,
     SeenJobs,
+    enabled_portals,
     load_jobs_format,
-    save_jobs_format,
+    load_portals,
     quality_gate,
+    save_jobs_format,
 )
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))

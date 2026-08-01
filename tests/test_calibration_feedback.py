@@ -17,11 +17,11 @@ SCRIPT = os.path.join(REPO_ROOT, "scripts", "calibration_feedback.py")
 sys.path.insert(0, os.path.join(REPO_ROOT, "scripts"))
 
 from calibration_feedback import (  # noqa: E402
+    build_report,
     compute_tier_funnel,
     detect_anomalies,
     generate_calibration_suggestions,
     propose_threshold_adjustments,
-    build_report,
 )
 from generate_report import render_history_funnel  # noqa: E402
 

@@ -32,7 +32,6 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Optional
 
-
 # ============================================================
 # 注入模式库（确定性匹配，按语义分组）
 # ============================================================
@@ -185,7 +184,6 @@ def _strip_hits(jd_text: str, report: JdGuardReport) -> str:
     if not report.hits:
         return jd_text
 
-    lines = jd_text.splitlines()
     drop_lines = set()
     for h in report.hits:
         if h.group == "delimiter_injection":

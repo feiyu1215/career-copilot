@@ -3,11 +3,11 @@
 直接测 quality_gate_check（fetch 之后、score 之前的门禁），
 通过 monkeypatch 隔离 smart_score.parse_jobs_raw，避免引入 LLM / 重依赖。
 """
+import sys
+from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
-import sys
-from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts"))
 

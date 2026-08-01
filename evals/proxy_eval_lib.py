@@ -13,7 +13,6 @@ from __future__ import annotations
 
 import os
 import sys
-from typing import Any
 
 # 复用 career_log 的 SENSITIVE_PATTERNS（脱敏正则集中维护，避免重造）
 _SCRIPTS = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "scripts")

@@ -7,14 +7,13 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
 
 from pre_filter import (
-    detect_experience_requirement,
-    has_english_hard_gate,
-    extract_direction_keywords,
-    compute_direction_score,
-    pre_filter,
     DEFAULT_FILTER_CONFIG,
+    compute_direction_score,
+    detect_experience_requirement,
+    extract_direction_keywords,
+    has_english_hard_gate,
+    pre_filter,
 )
-
 
 # ============================================================
 # detect_experience_requirement

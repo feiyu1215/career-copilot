@@ -23,8 +23,8 @@ SCRIPTS = ROOT / "scripts"
 if str(SCRIPTS) not in __import__("sys").path:
     __import__("sys").path.insert(0, str(SCRIPTS))
 
-import run_pipeline  # noqa: E402
 import generate_report  # noqa: E402
+import run_pipeline  # noqa: E402
 
 JOBS_RAW = """\
 --- JOB 1 ---

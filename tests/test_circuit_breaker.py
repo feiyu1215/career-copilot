@@ -1,12 +1,14 @@
 """T1 验收测试：管线熔断器"""
-import pytest
-import sys
 import asyncio
+import sys
 from pathlib import Path
+
+import pytest
+
 sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
 
-from smart_score import PipelineAbortError, StageStats, stage1
 from llm_client import LLMCallFailed
+from smart_score import PipelineAbortError, StageStats, stage1
 
 
 class TestStageStats:

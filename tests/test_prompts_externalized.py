@@ -10,16 +10,15 @@ import sys
 
 sys.path.insert(0, "scripts")
 
-import smart_score  # noqa: E402
 from smart_score import (  # noqa: E402
-    load_prompts,
+    _DEFAULT_PROMPTS,
+    _GLOBAL_RERANK_TEMPLATE,
+    _PROMPTS,
+    CALIBRATION_SYSTEM,
+    _build_rerank_system,
     build_stage1_system,
     build_stage2_system,
-    CALIBRATION_SYSTEM,
-    _GLOBAL_RERANK_TEMPLATE,
-    _build_rerank_system,
-    _DEFAULT_PROMPTS,
-    _PROMPTS,
+    load_prompts,
 )
 
 PROMPT_KEYS = ("stage1_system", "stage2_system", "calibration_system", "global_rerank_system")

@@ -7,8 +7,6 @@ import sys
 import types
 from pathlib import Path
 
-import pytest
-
 SCRIPT = Path(__file__).resolve().parent.parent / "scripts" / "setup_wizard.py"
 sys.path.insert(0, str(SCRIPT.parent))
 spec = importlib.util.spec_from_file_location("setup_wizard", SCRIPT)

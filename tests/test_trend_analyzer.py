@@ -3,12 +3,11 @@
 import json
 import os
 import sys
-from pathlib import Path
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(REPO_ROOT, "scripts"))
 
-from trend_analyzer import (
+from trend_analyzer import (  # noqa: E402
     analyze_trend,
     append_snapshot,
     build_snapshot,

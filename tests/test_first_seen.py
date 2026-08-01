@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """Phase 8.3 智能投递时机建议 — 测试（纯本地、零 LLM，可离线回归）。"""
-import json
-import os
 import sys
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -13,9 +11,9 @@ SCRIPTS = ROOT / "scripts"
 if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
-import first_seen
-from run_pipeline import _apply_first_seen, _record_first_seen
-from generate_report import render_job_card, generate_html
+import first_seen  # noqa: E402
+from generate_report import generate_html, render_job_card  # noqa: E402
+from run_pipeline import _apply_first_seen, _record_first_seen  # noqa: E402
 
 
 # --------------------------------------------------------------------------- #

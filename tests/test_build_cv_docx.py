@@ -3,17 +3,15 @@
 import json
 from pathlib import Path
 
-import pytest
-
 _SCRIPTS = Path(__file__).resolve().parents[1] / "scripts"
-import sys
+import sys  # noqa: E402
+
 if str(_SCRIPTS) not in sys.path:
     sys.path.insert(0, str(_SCRIPTS))
 
-import build_cv_docx  # noqa: E402
 import build_cv  # noqa: E402
+import build_cv_docx  # noqa: E402
 import verify_ats  # noqa: E402
-
 
 SAMPLE = {
     "sections": [

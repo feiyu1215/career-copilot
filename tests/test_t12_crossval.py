@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """T12 —— 多 Judge 交叉验证的单元测试 + 框架 CLI 自检。"""
 import os
-import sys
 import subprocess
+import sys
 
 import pytest
 

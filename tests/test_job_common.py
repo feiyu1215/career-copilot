@@ -11,8 +11,6 @@ import importlib.util
 import sys
 from pathlib import Path
 
-import pytest
-
 SCRIPT = Path(__file__).resolve().parent.parent / "scripts" / "job_common.py"
 sys.path.insert(0, str(SCRIPT.parent))
 spec = importlib.util.spec_from_file_location("job_common", SCRIPT)

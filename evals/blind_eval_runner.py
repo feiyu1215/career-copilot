@@ -32,7 +32,9 @@ sys.path.insert(0, os.path.join(ROOT, "evals"))
 sys.path.insert(0, os.path.join(ROOT, "scripts"))
 
 import proxy_eval_lib as pel  # noqa: E402
-from eval_env import load_provider_env  # M1：共享 .env 加载（替代本地 _load_env_file/_load_provider_env）
+from eval_env import (  # noqa: E402
+    load_provider_env,  # M1：共享 .env 加载（替代本地 _load_env_file/_load_provider_env）
+)
 
 # ── judge 系统提示（协议 D1–D6 rubric）────────────────────────────
 # 与 run_dynamic_eval.JUDGE_SYS 同源思路，但改为「按 D1–D6 逐项打 0–2」。
@@ -380,7 +382,7 @@ def _run_demo() -> str:
     with open(out_path, "w", encoding="utf-8") as f:
         f.write(report)
     print(f"[demo] 盲评完成，报告：{out_path}")
-    print(f"[demo] EVIDENCE_TIER=SYNTHETIC-MECHANISM（脚手架接线验证，非真实质量结论）")
+    print("[demo] EVIDENCE_TIER=SYNTHETIC-MECHANISM（脚手架接线验证，非真实质量结论）")
     for r in rows:
         print(f"  {r['session_id']:>16} {r['before_or_after']:>6} 总分={r['total']}/12")
     return out_path

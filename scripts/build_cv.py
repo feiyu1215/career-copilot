@@ -36,7 +36,7 @@ if str(_SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(_SCRIPTS_DIR))
 
 from verify_ats import run_checks  # noqa: E402
-from visual_inspect import protect_headings, inspect_pdf  # noqa: E402
+from visual_inspect import inspect_pdf, protect_headings  # noqa: E402
 
 ENGINE_CANDIDATES = ("lualatex", "xelatex", "pdflatex")
 
@@ -191,7 +191,7 @@ def build(draft_tex: str, out_pdf: str | None = None,
     # 非 LaTeX 降级路径：docx（无引擎也能产出可投递材料）
     want_docx = (fallback == "docx") or (out_pdf and str(out_pdf).lower().endswith(".docx"))
     if want_docx:
-        from build_cv_docx import build_docx, _tex_to_structured
+        from build_cv_docx import _tex_to_structured, build_docx
         out_docx = _as_docx(out_pdf or "cv.docx")
         check_constraints = _resolve_constraints(constraints, template)
         if draft_path.suffix.lower() == ".json":

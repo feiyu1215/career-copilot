@@ -12,11 +12,11 @@ G1 前版本（仅差「Over-Claim 判定细则」一段）。取：
   - FAIL 输出 OLD=fail 且 NEW=fail → 非 judge 误伤，失败源于生成方差（agnes 偶发漏触发熔断前置声明）→ 走 B
 消耗 4 次 judge 调用（无 gen）。
 """
-import os
-import sys
-import re
-import json
 import asyncio
+import json
+import os
+import re
+import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "scripts"))
@@ -24,12 +24,12 @@ sys.path.insert(0, os.path.join(ROOT, "evals"))
 
 
 # .env 加载抽到 evals/eval_env.py（M1：统一三处；覆盖式语义，与 run_dynamic_eval 一致）。
-from eval_env import load_provider_env
+from eval_env import load_provider_env  # noqa: E402
 
 load_provider_env()  # 先于 import llm_client，避免模块级快照为空
 
-from llm_client import LLMClient
-from run_dynamic_eval import JUDGE_SYS as NEW_JUDGE_SYS  # 当前（含 G1 细则）
+from llm_client import LLMClient  # noqa: E402
+from run_dynamic_eval import JUDGE_SYS as NEW_JUDGE_SYS  # 当前（含 G1 细则）  # noqa: E402
 
 # G1 前版本：与 NEW 仅差「Over-Claim 判定细则」一段，其余完全一致。
 OLD_JUDGE_SYS = (

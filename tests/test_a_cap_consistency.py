@@ -18,7 +18,7 @@ ROOT = Path(__file__).resolve().parent.parent
 SCRIPTS = ROOT / "scripts"
 if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
-from config_loader import load_constraints
+from config_loader import load_constraints  # noqa: E402
 
 _A_TIER_CAP = load_constraints()["a_tier_cap"]
 

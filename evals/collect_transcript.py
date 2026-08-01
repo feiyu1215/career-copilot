@@ -26,7 +26,6 @@ sys.path.insert(0, os.path.join(ROOT, "evals"))
 
 import proxy_eval_lib as pel  # noqa: E402
 
-
 _VALID_PHASES = ("match", "interview", "resume", "memory")
 _VALID_BOA = ("before", "after")
 

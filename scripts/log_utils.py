@@ -1,6 +1,6 @@
 """结构化日志工具。替代散落的 print() 调用。"""
-import logging
 import json
+import logging
 import sys
 from datetime import datetime
 

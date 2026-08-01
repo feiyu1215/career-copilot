@@ -24,19 +24,19 @@ env 加载 + 常量 + 函数定义，正好为本脚本准备好 LLMClient 所�
   EVAL_PROVIDER=agnes EVAL_REPEAT=2 EVAL_OUT=evals/before_after_contrast.json \
       python evals/run_ablation.py
 """
-import os
-import sys
-import re
-import json
 import asyncio
+import json
+import os
+import re
+import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "scripts"))
 
 # 复用 run_dynamic_eval：import 时仅跑顶层（load_env + 常量 + 函数定义），不触发 main()
 # 注意：只用其常量（SYSTEM_REFS / JUDGE_SYS / read），run_one 在本文件本地实现以支持空结果重试。
-from run_dynamic_eval import SYSTEM_REFS, JUDGE_SYS, read
-from llm_client import LLMClient, PROVIDERS
+from llm_client import PROVIDERS, LLMClient  # noqa: E402
+from run_dynamic_eval import JUDGE_SYS, SYSTEM_REFS, read  # noqa: E402
 
 PROVIDER = os.environ.get("EVAL_PROVIDER", "agnes")
 _PROV_CFG = PROVIDERS.get(PROVIDER, {})

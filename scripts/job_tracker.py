@@ -349,11 +349,11 @@ def build_parser() -> argparse.ArgumentParser:
     u.add_argument("--note", default="")
     u.add_argument("--wecom", default=None, help="企业微信群机器人 key（B2）；空则跳过")
 
-    l = sub.add_parser("list", help="列出申请")
-    l.add_argument("--status")
-    l.add_argument("--source")
-    l.add_argument("--company")
-    l.add_argument("--limit", type=int, default=0)
+    list_parser = sub.add_parser("list", help="列出申请")
+    list_parser.add_argument("--status")
+    list_parser.add_argument("--source")
+    list_parser.add_argument("--company")
+    list_parser.add_argument("--limit", type=int, default=0)
 
     sh = sub.add_parser("show", help="查看单条详情")
     sh.add_argument("--id")

@@ -3,7 +3,6 @@
 
 编译与引擎定位均被 monkeypatch；注册表与模板落盘指向临时目录。
 """
-import importlib
 import sys
 from pathlib import Path
 
@@ -14,7 +13,6 @@ if str(_SCRIPTS) not in sys.path:
     sys.path.insert(0, str(_SCRIPTS))
 
 import manage_template as mt  # noqa: E402
-
 
 GOOD_TPL = (
     "\\documentclass{article}\n\\begin{document}\n"

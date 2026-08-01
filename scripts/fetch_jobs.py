@@ -42,16 +42,16 @@ fetch_jobs.py — 批量抓取招聘网站岗位 JD（v3 通用辅助脚本）
 
 from __future__ import annotations
 
-import subprocess
-import json
-import time
 import argparse
-import sys
-import os
-import re
 import datetime
 import hashlib
+import json
+import os
+import re
 import shutil
+import subprocess
+import sys
+import time
 
 # Phase 7.2：抓取节流（按 portals.yaml 的 rate_limit 主动限流）
 try:
@@ -66,7 +66,7 @@ def _find_catdesk() -> str:
     # 1. 环境变量
     if "CATDESK_BIN" in os.environ:
         return os.environ["CATDESK_BIN"]
-    
+
     # 2. 常见安装位置
     candidates = [
         os.path.expanduser("~/.catdesk/bin/catdesk"),
@@ -75,12 +75,12 @@ def _find_catdesk() -> str:
     for path in candidates:
         if os.path.isfile(path) and os.access(path, os.X_OK):
             return path
-    
+
     # 3. PATH 中查找
     catdesk_in_path = shutil.which("catdesk")
     if catdesk_in_path:
         return catdesk_in_path
-    
+
     # 4. 都找不到，返回默认值（会在运行时报错）
     return "catdesk"
 
@@ -165,7 +165,7 @@ PRESETS = {
 
 def run_browser_action(action_json: str, timeout: int = 30) -> dict:
     """执行 catdesk browser-action 命令并返回解析后的结果。
-    
+
     返回值中若含 "_error" 字段，表示执行失败（超时/异常）。
     调用方应检查此字段并决定是否重试。
     """
@@ -211,7 +211,7 @@ def navigate_to_page(url: str) -> bool:
 
 def extract_jobs_from_page(selector: str) -> tuple[list[str], bool]:
     """从当前页面提取岗位文本列表。
-    
+
     返回 (jobs_list, success_flag)：
     - success_flag=True: 成功提取（可能为空，但不是因为错误）
     - success_flag=False: 执行失败（超时/异常），调用方应重试
@@ -302,9 +302,9 @@ def fetch_all_jobs(
         seen_hashes.add(_dedup_key(job))
         seen_titles.add(_get_title(job))
 
-    print(f"=" * 60)
-    print(f"fetch_jobs.py — Career Copilot 多页抓取")
-    print(f"=" * 60)
+    print("=" * 60)
+    print("fetch_jobs.py — Career Copilot 多页抓取")
+    print("=" * 60)
     print(f"URL 模板: {base_url}")
     print(f"页数上限: {total_pages}（遇空页自动停止）")
     print(f"起始页: {start_page}")
@@ -312,7 +312,7 @@ def fetch_all_jobs(
     print(f"输出文件: {output_file}")
     if all_jobs:
         print(f"已有岗位: {len(all_jobs)}（断点续爬）")
-    print(f"-" * 60)
+    print("-" * 60)
 
     crawl_start_time = time.time()
     try:
@@ -334,7 +334,7 @@ def fetch_all_jobs(
             acquire_portal_throttle("catdesk")  # [7.2] 按 portals.yaml 主动节流
             success = navigate_to_page(url)
             if not success:
-                print(f"导航失败")
+                print("导航失败")
                 failed_pages.append(page)
                 consecutive_nav_failures += 1
                 if consecutive_nav_failures >= 5:
@@ -347,16 +347,16 @@ def fetch_all_jobs(
 
             # 提取（带重试逻辑）
             jobs, success = extract_jobs_from_page(selector)
-            
+
             # 如果执行失败（超时/异常），重试一次
             if not success:
-                print(f"重试...", end=" ", flush=True)
+                print("重试...", end=" ", flush=True)
                 time.sleep(delay)
                 jobs, success = extract_jobs_from_page(selector)
-            
+
             # 如果仍然失败，标记为失败页面并继续
             if not success:
-                print(f"执行失败，跳过此页")
+                print("执行失败，跳过此页")
                 failed_pages.append(page)
                 continue
 
@@ -396,18 +396,18 @@ def fetch_all_jobs(
             # 每 5 页保存一次进度
             if page % 5 == 0:
                 _save_jobs(all_jobs, output_file)
-                print(f"  [✓ 已保存进度]")
+                print("  [✓ 已保存进度]")
 
     except KeyboardInterrupt:
         print(f"\n[中断] 用户取消，保存已抓取的 {len(all_jobs)} 个岗位...")
     finally:
         _save_jobs(all_jobs, output_file)
 
-    print(f"-" * 60)
+    print("-" * 60)
     print(f"完成！总计 {len(all_jobs)} 个岗位 → {output_file}")
     if failed_pages:
         print(f"失败页面（{len(failed_pages)} 页）: {failed_pages[:20]}")
-    print(f"=" * 60)
+    print("=" * 60)
 
     return len(all_jobs)
 

@@ -109,7 +109,6 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Optional
 
-
 # ============================================================
 # 输出格式：与 fetch_jobs.py 的 _save_jobs 保持一致（JOB_MATCHER_FORMAT v1）
 # 说明：这里刻意「复制」而非 import，保证本脚本可独立运行、不耦合 catdesk 路线。
@@ -145,12 +144,10 @@ async def fetch_with_retry(fn, *, retries: int = 3, base_delay: float = 1.0,
     fn 为零参可等待调用（返回结果或抛异常）。全部耗尽返回 None，
     与 _fetch_detail 的失败语义一致（不中止整体抓取，只标记该 JD 失败）。
     """
-    last = None
     for attempt in range(retries):
         try:
             return await fn()
-        except Exception as e:
-            last = e
+        except Exception:
             if attempt == retries - 1:
                 break
             wait = min(base_delay * (2 ** attempt), max_delay) * random.uniform(0.5, 1.5)
@@ -436,7 +433,7 @@ class FeishuJobCrawler:
                 try:
                     await asyncio.wait_for(self._list_event.wait(), timeout=self.timeout)
                 except asyncio.TimeoutError:
-                    print(f"超时未捕获 list 接口（可能已登录态失效或站点结构变化）")
+                    print("超时未捕获 list 接口（可能已登录态失效或站点结构变化）")
                     return None
                 return _extract_list_items(self._captured_list.get(self._pending_list_key))
 
@@ -467,7 +464,7 @@ class FeishuJobCrawler:
                 consecutive_empty += 1
                 print(f"空（连续 {consecutive_empty}）")
                 if consecutive_empty >= 2:
-                    print(f"  [STOP] 连续 2 页为空，判定抓取完毕")
+                    print("  [STOP] 连续 2 页为空，判定抓取完毕")
                     break
             else:
                 consecutive_empty = 0
@@ -493,17 +490,17 @@ class FeishuJobCrawler:
             page_no += 1
             guard += 1
             if guard > 200:  # 极端保护
-                print(f"  [STOP] 已达 200 页保护上限")
+                print("  [STOP] 已达 200 页保护上限")
                 break
             if self.delay:
                 await asyncio.sleep(self.delay)
 
         # ---- 2. 抓详情 ----
         if self.no_detail:
-            print(f"  [跳过详情] --no-detail 已设，仅用列表 description")
+            print("  [跳过详情] --no-detail 已设，仅用列表 description")
             return
         if not self.latest_sig:
-            print(f"  [WARN] 未捕获到 _signature，详情接口可能无法调用；将退回列表 description")
+            print("  [WARN] 未捕获到 _signature，详情接口可能无法调用；将退回列表 description")
             return
 
         # 重新导航一次以刷新 _signature / csrf（避免详情请求时签名过期）
@@ -513,7 +510,7 @@ class FeishuJobCrawler:
         if self.max_jobs:
             job_ids = job_ids[: self.max_jobs]
 
-        print(f"-" * 60)
+        print("-" * 60)
         print(f"抓取详情：{len(job_ids)} 个岗位"
               f"（并发 {self.max_concurrency}，已跳过 {len(self._fetched_detail_ids)} 个已抓取）")
         sem = asyncio.Semaphore(self.max_concurrency)
@@ -568,7 +565,7 @@ class FeishuJobCrawler:
         """
         try:
             raw = await page.evaluate(js, [url, self.latest_csrf])
-        except Exception as e:
+        except Exception:
             return None
         try:
             data = json.loads(raw) if isinstance(raw, str) else raw
@@ -782,12 +779,12 @@ def main():
         sys.exit(1)
 
     _save_jobs(texts, args.output)
-    print(f"=" * 60)
+    print("=" * 60)
     print(f"完成！总计 {len(texts)} 个岗位 → {args.output}")
-    print(f"=" * 60)
-    print(f"下一步：")
+    print("=" * 60)
+    print("下一步：")
     print(f"  python3 smart_score.py --jobs {args.output} --profile <画像> \\")
-    print(f"      --summary <摘要> --output scored.json --provider <provider>")
+    print("      --summary <摘要> --output scored.json --provider <provider>")
 
 
 if __name__ == "__main__":

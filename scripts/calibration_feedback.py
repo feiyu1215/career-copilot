@@ -36,7 +36,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
-from datetime import datetime, timezone
+from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
@@ -45,8 +45,7 @@ _SCRIPTS_DIR = Path(__file__).resolve().parent
 if str(_SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(_SCRIPTS_DIR))
 
-from job_tracker import _load, _now
-
+from job_tracker import _load, _now  # noqa: E402
 
 # ============================================================
 # 数据加载
@@ -512,7 +511,7 @@ def main(argv=None) -> int:
     store = Path(args.store)
     if not store.exists():
         print(f"✗ 数据文件不存在: {store}", file=sys.stderr)
-        print(f"  请先运行 job_tracker.py 积累投递记录", file=sys.stderr)
+        print("  请先运行 job_tracker.py 积累投递记录", file=sys.stderr)
         return 1
 
     pipeline_config = _maybe_load_pipeline_config(args.pipeline_config)

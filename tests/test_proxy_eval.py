@@ -6,7 +6,6 @@ Seam：evals/proxy_eval_lib.py 的纯函数 redact_text / build_record / mask_la
 
 运行：python -m pytest tests/test_proxy_eval.py -q
 """
-import os
 import sys
 from pathlib import Path
 

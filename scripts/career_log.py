@@ -39,7 +39,6 @@ import uuid
 from collections import Counter, defaultdict
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Any
 
 # ──────────────────────────────────────────────
 # 配置
@@ -259,8 +258,8 @@ def generate_profile(events: list[dict]) -> str:
             for ins in e.get("insights", []):
                 insights.append(ins)
         if e.get("type") == "interview_done":
-            for l in e.get("learnings", []):
-                insights.append(l)
+            for learning in e.get("learnings", []):
+                insights.append(learning)
         if len(insights) >= 5:
             break
 
@@ -473,7 +472,7 @@ def cmd_stats() -> None:
 
     print(f"total events: {len(events)}")
     print(f"time range: {min(timestamps)} → {max(timestamps)}" if timestamps else "")
-    print(f"\nby status:")
+    print("\nby status:")
     for s, c in status_counts.most_common():
         print(f"  {s}: {c}")
     print("\nby type:")

@@ -3,8 +3,6 @@
 
 不依赖真实 lualatex/pdflatex：编译与 verify_ats 调用均被 monkeypatch 替换。
 """
-import importlib.util
-import os
 import sys
 import tempfile
 from pathlib import Path

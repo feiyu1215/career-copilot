@@ -15,8 +15,6 @@ import sys
 import types
 from pathlib import Path
 
-import pytest
-
 REPO = Path(__file__).resolve().parents[1]
 if str(REPO / "scripts") not in sys.path:
     sys.path.insert(0, str(REPO / "scripts"))
@@ -70,7 +68,8 @@ class _DeterministicClient:
         return __import__("json").dumps({"score": _score_for(title), "reasoning": "确定性回归"})
 
     def _stage2(self, user):
-        import re, json
+        import json
+        import re
         rows = re.findall(r"### 岗位 \d+（(JOB_\d+)）\s*\*\*标题\*\*：(.+)", user)
         scored = sorted(rows, key=lambda r: -_score_for(r[1]))
         out = []
@@ -82,7 +81,8 @@ class _DeterministicClient:
         return json.dumps(out, ensure_ascii=False)
 
     def _rerank(self, user):
-        import re, json
+        import json
+        import re
         rows = re.findall(r"### \d+\. (.+)（(JOB_\d+)）", user)
         scored = sorted(rows, key=lambda r: -_score_for(r[0]))
         out = []

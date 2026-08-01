@@ -47,7 +47,6 @@ from pathlib import Path
 from textwrap import dedent
 from typing import Optional
 
-
 # ============================================================
 # Prompt 模板（红线口径与 references/resume-guide.md 同源）
 # ============================================================

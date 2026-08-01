@@ -36,20 +36,20 @@ from __future__ import annotations
 import argparse
 import asyncio
 import json
+import os
 import re
 import shutil
 import sys
 import time
-import os
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 from types import SimpleNamespace
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
-from job_common import quality_gate  # Phase 4.3 抓取结果质量守门
+from job_common import quality_gate  # Phase 4.3 抓取结果质量守门  # noqa: E402
 
 # 复用 smart_score 既有的 trace 工具
 try:
@@ -797,7 +797,7 @@ def _update_baseline(opts, state: dict) -> None:
     trend_store = getattr(opts, "trend_store", None)
     if trend_store:
         try:
-            from trend_analyzer import capture_snapshot, append_snapshot
+            from trend_analyzer import append_snapshot, capture_snapshot
             snap = capture_snapshot(str(state["full_jobs_raw"]),
                                     date_str=getattr(opts, "date", None))
             store = append_snapshot(trend_store, snap)

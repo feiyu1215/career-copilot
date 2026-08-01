@@ -10,15 +10,13 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
 
-import fetch_jobs_feishu as fj
 from fetch_jobs_feishu import (
-    FeishuJobCrawler,
-    FeishuCheckpoint,
-    fetch_with_retry,
-    _load_user_agent,
     DEFAULT_USER_AGENT,
+    FeishuCheckpoint,
+    FeishuJobCrawler,
+    _load_user_agent,
+    fetch_with_retry,
 )
-
 
 # ──────────────────────────────────────────────
 # 1) 单 JD 重试（指数退避 + jitter）

@@ -8,12 +8,9 @@ test_jd_guard.py — JD 信任边界确定性测试（无 LLM）
 import sys
 from pathlib import Path
 
-import pytest
-
 SCRIPT = Path(__file__).resolve().parent.parent / "scripts" / "jd_guard.py"
 sys.path.insert(0, str(SCRIPT.parent))
-import jd_guard as jg
-
+import jd_guard as jg  # noqa: E402
 
 # ============================================================
 # 1. 四组模式命中

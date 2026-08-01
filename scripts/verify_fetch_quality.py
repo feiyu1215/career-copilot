@@ -38,7 +38,7 @@ _SCRIPTS_DIR = Path(__file__).resolve().parent
 if str(_SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(_SCRIPTS_DIR))
 
-from job_common import quality_gate, load_jobs_format  # noqa: E402
+from job_common import load_jobs_format, quality_gate  # noqa: E402
 
 _URL_RE = re.compile(r"\[URL\](.*?)\[/URL\]", re.S)
 

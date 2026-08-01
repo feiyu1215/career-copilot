@@ -1,12 +1,11 @@
 """T2 验收测试：LLM Client 健壮性"""
-import pytest
 import sys
-import time
 from pathlib import Path
+
 sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
 
 from llm_client import LLMCallFailed
-from provider_chain import ProviderChain, ProviderState
+from provider_chain import ProviderChain
 
 
 class TestLLMCallFailed:

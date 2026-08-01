@@ -112,7 +112,7 @@ def inspect_pdf(pdf_path: str, constraints: dict | None = None) -> dict:
         blocks.sort(key=lambda b: (b[1], b[0]))
         # 右/底溢出
         for b in blocks:
-            x0, y0, x1, y1, txt = b[0], b[1], b[2], b[3], b[4]
+            x1, y1, txt = b[2], b[3], b[4]
             if x1 > rect.width - margin_tol or y1 > rect.height - margin_tol:
                 issues.append({
                     "type": "overflow",
@@ -123,7 +123,7 @@ def inspect_pdf(pdf_path: str, constraints: dict | None = None) -> dict:
                 })
         # 孤行标题 / 同页空白间隙
         for i, b in enumerate(blocks):
-            x0, y0, x1, y1, txt = b[0], b[1], b[2], b[3], b[4]
+            x1, y1, txt = b[2], b[3], b[4]
             if (i == len(blocks) - 1) and (y1 / rect.height) >= bottom_ratio:
                 # 末块且贴近页底；若下一页有正文 → 疑似孤行标题
                 if pi + 1 < npages:

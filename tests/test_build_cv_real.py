@@ -3,7 +3,7 @@
 """
 test_build_cv_real.py — build_cv 的 *真实* 编译闭环测试（非 monkeypatch）。
 
-本机已安装 MiKTeX（D:\Program Files\MiKTeX\miktex\bin\x64\），lualatex/xelatex/
+本机已安装 MiKTeX（D:\\Program Files\\MiKTeX\\miktex\bin\x64\\），lualatex/xelatex/
 pdflatex 均可用。本测试用真实引擎把 .tex 编译成 PDF，再用 verify_ats 做文本层 +
 硬不变量校验，证明「编译 → ATS」链路在本环境确实可跑通，而不是只能 mock。
 

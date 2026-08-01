@@ -12,11 +12,12 @@
     - 默认（框架模式）：仅加载 cases 并做结构自检，exit 0。无需 LLM key，CI 友好。
     - --score：调用管线对每 case 真实打分，计算指标并门禁，exit 0/1（需 LLM key）。
 """
-import json
-import sys
 import argparse
 import asyncio
+import json
+import sys
 from pathlib import Path
+
 from scipy.stats import spearmanr
 
 GOLDEN_DIR = Path(__file__).parent / "golden"
@@ -162,8 +163,8 @@ def predict_case(case: dict, provider: str, model: str, skip_on_error: bool,
     """调用管线对单个 golden case 打分。无 LLM key / 失败时返回 None。"""
     try:
         sys.path.insert(0, str(REPO_ROOT))
-        from scripts.smart_score import stage1, build_direction_anchor
         from scripts.llm_client import LLMClient
+        from scripts.smart_score import build_direction_anchor, stage1
     except Exception as e:  # noqa: BLE001
         if skip_on_error:
             print(f"  [SKIP] {case.get('id')}: 无法导入管线 ({e})", file=sys.stderr)

@@ -20,11 +20,11 @@ type=contract_adherence 的用例：
   EVAL_PROVIDER=agnes EVAL_REPEAT=2 EVAL_REPEAT_IDS=14 EVAL_OUT=evals/eval_results_dynamic_agnes_repeat.json \\
       python evals/run_dynamic_eval.py
 """
-import os
-import sys
-import re
-import json
 import asyncio
+import json
+import os
+import re
+import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "scripts"))
@@ -34,7 +34,7 @@ sys.path.insert(0, os.path.join(ROOT, "evals"))
 # 加载 .env（必须在 import llm_client 之前：llm_client 在 import 时即读取 NVIDIA_* 环境变量，
 # 若 import 时 env 为空，模块级变量会被捕获成 ""，之后再设也无效）。
 # 逻辑抽到 evals/eval_env.py（M1：统一 run_dynamic_eval / judge_ab_probe / blind_eval_runner 三处重复）。
-from eval_env import load_provider_env
+from eval_env import load_provider_env  # noqa: E402
 
 load_provider_env()  # 注入本仓 .env（NVIDIA 等）+ scholar .env（AGNES / friday）
 key = os.environ.get("NVIDIA_API_KEY", "")
@@ -83,7 +83,7 @@ REPEAT = int(os.environ.get("EVAL_REPEAT", "1"))
 REPEAT_IDS = {int(x) for x in os.environ.get("EVAL_REPEAT_IDS", "").split(",") if x.strip()}
 OUT_PATH = os.environ.get("EVAL_OUT", "evals/eval_results_dynamic.json")
 
-from llm_client import LLMClient, PROVIDERS  # noqa: E402
+from llm_client import PROVIDERS, LLMClient  # noqa: E402
 
 # 模型回退到 provider 默认（见上方说明）：显式 EVAL_GEN_MODEL / EVAL_JUDGE_MODEL 优先。
 _PROV_CFG = PROVIDERS.get(PROVIDER, {})

@@ -1,12 +1,11 @@
 """T6 验收测试：执行 Trace"""
-import pytest
 import json
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
 
-from trace import ExecutionTracer, TraceEvent
+from trace import ExecutionTracer
 
 
 class TestExecutionTracer:

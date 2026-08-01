@@ -90,7 +90,7 @@ def test_build_heatmap():
     hm = bub.build_heatmap(clusters)
     assert "维度" in hm and "优先级权重" in hm
     # 行数 = 表头2 + 簇数
-    lines = [l for l in hm.splitlines() if l.startswith("|")]
+    lines = [line for line in hm.splitlines() if line.startswith("|")]
     assert len(lines) == 2 + len(clusters)
 
 
