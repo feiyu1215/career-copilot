@@ -143,5 +143,3 @@ career-copilot/
 - JD / 招聘数据为公开信息，按项目约定保留，不视为敏感数据。
 
 ---
-
-*本 README 由执行方按「规范开源、工程优先、非营销页」原则撰写；六阶段常数（`RERANK_MAX_DEVIATION=20`、`a_tier_cap=25%`、熔断 30%/5、降级链 `friday→sub2api→nvidia→agnes`）均取自源码实读。*

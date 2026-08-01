@@ -144,5 +144,3 @@ career-copilot/
 - JD / recruiting data are public information, retained per project convention and not treated as sensitive.
 
 ---
-
-*This README was written by the executor under the principle "canonical open-source, engineering-first, not a marketing page"; the 6-stage constants (`RERANK_MAX_DEVIATION=20`, `a_tier_cap=25%`, breaker 30%/5, failover chain `friday→sub2api→nvidia→agnes`) are all read directly from source.*
