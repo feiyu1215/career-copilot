@@ -80,9 +80,12 @@ flowchart LR
 
 ---
 
-## 5. 快速开始
+## 5. 5 分钟 Quick Start
 
 ```bash
+# 0. 环境检测：确认依赖与 Provider key 就绪
+python scripts/check_env.py
+
 # 1. 安装依赖（建议虚拟环境）
 pip install -r requirements.txt
 
@@ -91,7 +94,11 @@ export LLM_FAILOVER_CHAIN="friday,sub2api,nvidia,agnes"
 export FRIDAY_API_KEY="..."
 # 缺失 key 时，LLMClient 在构造阶段即抛清晰错误，不会静默失败
 
-# 3. 运行端到端 pipeline
+# 3. 帮我建档：从简历生成职业画像与竞争力基线
+python scripts/gen_profile.py --resume path/to/resume.pdf --output-dir ./profile
+python scripts/career_log.py init
+
+# 4. 帮我匹配岗位：跑端到端 pipeline，得到 A/B/C 分级评分
 python scripts/run_pipeline.py --resume-from fetch --incremental
 ```
 
