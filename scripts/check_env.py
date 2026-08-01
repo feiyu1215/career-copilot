@@ -75,12 +75,14 @@ def main():
 
     # LLM 调用配置提示
     print("\n  ℹ️  LLM 平台配置（多 Provider 支持）：")
-    print("     当前实现支持两个 Provider：friday（内部平台）和 sub2api（外部 API 代理）")
+    print("     系统支持四个 Provider：friday（内部平台）、sub2api（外部 API 代理）、nvidia（开源模型托管）、agnes（外部可达）；")
+    print("     降级顺序由 LLM_FAILOVER_CHAIN 控制（默认 friday,sub2api,nvidia,agnes）。下方会依次探测已配置 Provider 的连通性。")
     print("     切换方式：")
-    print("       1. 环境变量 LLM_PROVIDER=friday|sub2api（全局默认）")
-    print("       2. 脚本参数 --provider friday|sub2api（单次覆盖）")
+    print("       1. 环境变量 LLM_PROVIDER=friday|sub2api|nvidia|agnes（全局默认）")
+    print("       2. 脚本参数 --provider <name>（单次覆盖）")
     print("       3. Pipeline 启动时 AskQuestion 交互选择")
-    print("     高级覆盖：LLM_BASE_URL/FRIDAY_APP_ID（Friday）或 SUB2API_BASE_URL/SUB2API_API_KEY（Sub2API）")
+    print("     高级覆盖：LLM_BASE_URL/FRIDAY_APP_ID（Friday）、SUB2API_BASE_URL/SUB2API_API_KEY（Sub2API）、")
+    print("                NVIDIA_BASE_URL/NVIDIA_API_KEY（NVIDIA）、AGNES_BASE_URL/AGNES_API_KEY（Agnes）")
 
     print()
     if all_ok:
@@ -118,17 +120,17 @@ def _check_network_connectivity():
     import urllib.request
 
     providers = {
-        "friday": os.environ.get(
-            "LLM_BASE_URL",
-            "https://friday.xiaojukeji.com"
-        ),
-        "sub2api": os.environ.get(
-            "SUB2API_BASE_URL",
-            "https://api.sub2api.com"
-        ),
+        "friday": os.environ.get("LLM_BASE_URL", "https://friday.xiaojukeji.com"),
+        "sub2api": os.environ.get("SUB2API_BASE_URL", "https://api.sub2api.com"),
+        "nvidia": os.environ.get("NVIDIA_BASE_URL", "https://integrate.api.nvidia.com/v1"),
+        "agnes": os.environ.get("AGNES_BASE_URL", ""),
     }
 
     for name, base_url in providers.items():
+        if not base_url:
+            # agnes 等未配置 BASE_URL 的 Provider：跳过连通性探测，避免误报不可达
+            print(f"    ⏭️  {name} — 未配置 BASE_URL，跳过连通性检测")
+            continue
         # 规范化 URL：确保是 https 开头的完整地址
         url = base_url.rstrip("/")
         if not url.startswith("http"):
