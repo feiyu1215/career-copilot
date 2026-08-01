@@ -27,11 +27,12 @@ from __future__ import annotations
 import asyncio
 import os
 import sys
-from typing import Any
+from typing import Any, cast
 
 import yaml
 from cache import default_cache  # T13：语义缓存
 from openai import AsyncOpenAI  # 模块级导入，便于测试时 monkeypatch
+from openai.types.chat import ChatCompletionMessageParam
 
 # ============================================================
 # 统一失败语义（T2：替代返回空字符串/None 的静默失败）
@@ -311,7 +312,7 @@ class LLMClient:
                 async with self.semaphore:
                     resp = await self.client.chat.completions.create(
                         model=self.model,
-                        messages=messages,
+                        messages=cast("list[ChatCompletionMessageParam]", messages),
                         temperature=temperature,
                         max_tokens=max_tokens,
                     )
@@ -370,7 +371,7 @@ class LLMClient:
                     async with self.semaphore:
                         resp = await fallback_client.chat.completions.create(
                             model=fallback_model,
-                            messages=messages,
+                            messages=cast("list[ChatCompletionMessageParam]", messages),
                             temperature=temperature,
                             max_tokens=max_tokens,
                         )
@@ -409,7 +410,7 @@ class LLMClient:
                 async with self.semaphore:
                     resp = await self.client.chat.completions.create(
                         model=self.model,
-                        messages=messages,
+                        messages=cast("list[ChatCompletionMessageParam]", messages),
                         temperature=temperature,
                         max_tokens=max_tokens,
                     )
@@ -460,7 +461,7 @@ class LLMClient:
                     async with self.semaphore:
                         resp = await fallback_client.chat.completions.create(
                             model=fallback_model,
-                            messages=messages,
+                            messages=cast("list[ChatCompletionMessageParam]", messages),
                             temperature=temperature,
                             max_tokens=max_tokens,
                         )
@@ -471,9 +472,6 @@ class LLMClient:
                     print(f"  [降级成功] {provider_name}/{fallback_model} 响应正常",
                           file=sys.stderr)
                     self._mark_served(provider_name, fallback_model, config)
-                    resp._served_by = provider_name
-                    resp._served_via_failover = True
-                    resp._served_is_local = bool(config.get("local"))
                     return resp
                 except Exception as e:
                     wait = self._compute_retry_wait(e, attempt, fallback_retries)
