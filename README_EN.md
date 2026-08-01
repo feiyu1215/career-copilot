@@ -82,6 +82,9 @@ flowchart LR
 ## 5. Quick Start
 
 ```bash
+# 0. Detect environment: confirm dependencies and provider keys are ready
+python scripts/check_env.py
+
 # 1. Install dependencies (virtualenv recommended)
 pip install -r requirements.txt
 
@@ -90,7 +93,11 @@ export LLM_FAILOVER_CHAIN="friday,sub2api,nvidia,agnes"
 export FRIDAY_API_KEY="..."
 # Missing key -> LLMClient raises a clear error at construction, never fails silently
 
-# 3. Run the end-to-end pipeline
+# 3. Build my profile: generate career profile and competitiveness baseline from a resume
+python scripts/gen_profile.py --resume path/to/resume.pdf --output-dir ./profile
+python scripts/career_log.py init
+
+# 4. Match roles for me: run the end-to-end pipeline for an A/B/C tiered score
 python scripts/run_pipeline.py --resume-from fetch --incremental
 ```
 
