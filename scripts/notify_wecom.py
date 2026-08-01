@@ -47,7 +47,7 @@ def send_wecom(webhook: str | None, content: str, *, msgtype: str = "text",
         with urllib.request.urlopen(req, timeout=timeout) as resp:
             body = resp.read().decode("utf-8", "replace")
         data = json.loads(body)
-        return data.get("errcode", -1) == 0
+        return bool(data.get("errcode", -1) == 0)
     except (urllib.error.URLError, OSError, ValueError) as exc:
         print(f"[warn] 企业微信推送失败（已忽略）: {exc}", file=sys.stderr)
         return False

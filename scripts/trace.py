@@ -1,11 +1,10 @@
 """执行 Trace：记录管线每次运行的所有 LLM 调用。"""
 import json
 import time
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
-
 
 # 模型定价（单位：$ / 1M tokens）。(input_price, output_price)
 PRICING_PER_MILLION = {
@@ -36,7 +35,7 @@ class TraceEvent:
 class ExecutionTracer:
     """JSONL append-only trace。每次运行一个文件。"""
 
-    def __init__(self, run_id: str = None, output_dir: str = ".traces"):
+    def __init__(self, run_id: str | None = None, output_dir: str = ".traces"):
         if run_id is None:
             run_id = datetime.now().strftime("%Y%m%d_%H%M%S")
         self.run_id = run_id
@@ -53,7 +52,7 @@ class ExecutionTracer:
 
     def record_call(self, stage: str, provider: str, model: str,
                     input_tokens: int, output_tokens: int, latency_ms: int,
-                    job_ids: list = None, is_fallback: bool = False):
+                    job_ids: list | None = None, is_fallback: bool = False):
         self.record(TraceEvent(
             timestamp=datetime.now().isoformat(timespec="milliseconds"),
             stage=stage, event="call_end",

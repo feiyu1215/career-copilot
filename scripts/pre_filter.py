@@ -18,8 +18,7 @@ pre_filter.py — Stage 1 之前的确定性预过滤
 from __future__ import annotations
 
 import re
-from typing import Optional
-
+from typing import Any, Optional
 
 # ============================================================
 # 方向词检测
@@ -196,7 +195,7 @@ def pre_filter(jobs: list[dict], profile: dict,
         jd_text = job.get("full_text", "")
         title = job.get("title", "")
         search_text = (title + " " + jd_text).lower()
-        meta = {}
+        meta: dict[str, Any] = {}
 
         # Rule 4: 垃圾/诈骗信号 → spam 跳过（优先于过短判定，短垃圾 JD 也应被识别）
         spam_hit = next((s for s in _SPAM_SIGNALS if s in search_text), None)
@@ -286,8 +285,8 @@ def pre_filter(jobs: list[dict], profile: dict,
 # ============================================================
 
 if __name__ == "__main__":
-    import json
     import argparse
+    import json
     import sys
     from pathlib import Path
 

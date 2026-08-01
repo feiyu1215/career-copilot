@@ -21,7 +21,7 @@ import json
 import os
 import time
 from pathlib import Path
-from typing import Optional
+from typing import Optional, cast
 
 DEFAULT_TTL_DAYS = 7
 DEFAULT_CACHE_DIR = Path(".cache/llm")
@@ -71,7 +71,7 @@ class SemanticCache:
             self.misses += 1
             return None
         self.hits += 1
-        return rec.get("value")
+        return cast("str | None", rec.get("value"))
 
     def put(self, model: str, messages: list[dict], value: str) -> None:
         """写入缓存（原子替换）。"""

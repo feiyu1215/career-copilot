@@ -24,15 +24,14 @@ Provider 选择优先级：
 
 from __future__ import annotations
 
+import asyncio
 import os
 import sys
-import asyncio
-
-from cache import default_cache, SemanticCache  # T13：语义缓存
-from openai import AsyncOpenAI  # 模块级导入，便于测试时 monkeypatch
+from typing import Any
 
 import yaml
-
+from cache import default_cache  # T13：语义缓存
+from openai import AsyncOpenAI  # 模块级导入，便于测试时 monkeypatch
 
 # ============================================================
 # 统一失败语义（T2：替代返回空字符串/None 的静默失败）
@@ -117,7 +116,7 @@ DEFAULT_PROVIDERS = {
 }
 
 
-def build_providers(defaults: dict, yaml_providers: dict | None = None) -> dict:
+def build_providers(defaults: dict, yaml_providers: dict | None = None) -> dict[str, dict[str, Any]]:
     """合并默认 provider 与 YAML 扩展（YAML 可新增 / 覆盖 provider，无需改代码）。"""
     merged = {k: dict(v) for k, v in defaults.items()}
     for name, cfg in (yaml_providers or {}).items():
@@ -127,7 +126,7 @@ def build_providers(defaults: dict, yaml_providers: dict | None = None) -> dict:
     return merged
 
 
-def load_providers(path=None) -> dict:
+def load_providers(path=None) -> dict[str, dict[str, Any]]:
     """从 config/providers.yaml（可选）加载扩展 provider，叠加在内置默认之上。"""
     if path is None:
         path = os.path.join(
@@ -176,7 +175,7 @@ def _resolve_api_key(config: dict, explicit: str | None = None) -> str | None:
 # Provider 降级链（T2 补全：主 Provider 不可用时自动切换）
 # ============================================================
 
-import time as _time
+import time as _time  # noqa: E402
 
 # 降级顺序：从主力到兜底。可通过环境变量 LLM_FAILOVER_CHAIN 覆盖（逗号分隔）。
 FAILOVER_CHAIN: list[str] = os.environ.get(
@@ -496,7 +495,7 @@ class LLMClient:
             if attempt == max_retries - 1:
                 return None
             # 其他错误：指数退避 + jitter（±50%）
-            return 2 ** (attempt + 1) * random.uniform(0.5, 1.5)
+            return float(2 ** (attempt + 1) * random.uniform(0.5, 1.5))
 
         # 认证错误：不重试
         if isinstance(error, openai.AuthenticationError):

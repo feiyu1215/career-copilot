@@ -32,16 +32,17 @@ smart_score.py — 六阶段智能评分 pipeline
 
 from __future__ import annotations
 
+import argparse
+import asyncio
+import json
+import math
 import os
 import sys
-import json
 import time
-import math
-import asyncio
-import argparse
-from pathlib import Path
 from datetime import datetime
-from typing import Optional
+from pathlib import Path
+from typing import Any, Optional, cast
+
 import yaml
 
 
@@ -75,9 +76,10 @@ class StageStats:
 SCRIPT_DIR = Path(__file__).parent
 sys.path.insert(0, str(SCRIPT_DIR))
 
+from trace import ExecutionTracer  # noqa: E402
+
 from behavior_fit import compute_behavior_fit, load_behavioral_profile  # noqa: E402
 from llm_client import LLMClient  # noqa: E402
-from trace import ExecutionTracer  # noqa: E402
 
 DEFAULT_BEHAVIOR_PROFILE = os.path.join(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
@@ -92,9 +94,9 @@ DEFAULT_BEHAVIOR_PROFILE = os.path.join(
 DEFAULT_CONFIG_PATH = Path(__file__).parent.parent / "config" / "pipeline.yaml"
 
 
-def load_config(config_path: str = None) -> dict:
+def load_config(config_path: str | None = None) -> dict:
     """加载管线配置。优先级：CLI 参数 > YAML 文件 > 代码默认值。"""
-    defaults = {
+    defaults: dict[str, Any] = {
         "pipeline": {"timeout_seconds": 1800, "checkpoint_dir": ".checkpoint", "version": "3.0.0"},
         "stage1": {"model": "gpt-4o-mini", "batch_size": 25, "max_concurrent": 8,
                    "truncation_chars": 1500, "circuit_breaker_threshold": 0.30, "circuit_min_samples": 5},
@@ -153,7 +155,7 @@ PIPELINE_CFG = load_config()
 DEFAULT_PROMPTS_PATH = Path(__file__).parent.parent / "config" / "prompts.yaml"
 
 
-def load_prompts(config_path: str = None) -> dict:
+def load_prompts(config_path: str | None = None) -> dict:
     """加载外部化提示词模板。文件缺失或解析失败返回空 dict（回退内联默认）。"""
     path = Path(config_path) if config_path else DEFAULT_PROMPTS_PATH
     if not path.exists():
@@ -527,7 +529,6 @@ def _classify_parse(result: Optional[dict]) -> tuple[bool, float, str]:
 
 def _parse_json_array(text: str) -> list[dict]:
     """从 LLM 输出中提取 JSON 数组。供 Stage 2 Listwise 使用。"""
-    import re
     text = _strip_markdown_fence(text)
     text = _clean_json_str(text)
 
@@ -583,7 +584,7 @@ def build_direction_anchor(profile: dict) -> str:
         # 取每个 scenario 的前 8 个字作为锚点
         return "/".join(s[:8] for s in scenarios[:4])
 
-    return profile.get("role_type", "AI产品")
+    return cast(str, profile.get("role_type", "AI产品"))
 
 
 def build_domain_knowledge(profile: dict) -> str:
@@ -678,13 +679,13 @@ def build_stage1_system(direction_anchor: str, variant: str = "general") -> str:
     # 回退：变体缺失时退到通用版，保证无回归
     if key not in _PROMPTS:
         key = "stage1_system"
-    return _PROMPTS[key].format(direction_anchor=direction_anchor)
+    return cast(str, _PROMPTS[key].format(direction_anchor=direction_anchor))
 
 
 async def stage1(client: LLMClient, candidate_summary: str,
                  direction_anchor: str, jobs: list[dict],
-                 progress_callback=None, tracer: "ExecutionTracer" = None,
-                 prompt_variant: str = "general") -> list[dict]:
+                 progress_callback=None, tracer: "ExecutionTracer | None" = None,
+                 prompt_variant: str = "general") -> tuple[list[dict], StageStats]:
     """Stage 1: 全量评分
 
     prompt_variant: 提示词变体（general/strict/lenient），适配不同模型族。
@@ -738,7 +739,7 @@ async def stage1(client: LLMClient, candidate_summary: str,
         batch = [eval_one(jobs[j]) for j in range(i, min(i + batch_size, len(jobs)))]
         results = await asyncio.gather(*batch, return_exceptions=True)
         for r in results:
-            if isinstance(r, Exception):
+            if isinstance(r, BaseException):
                 stage_stats.failed += 1
             else:
                 stage_stats.succeeded += 1
@@ -812,7 +813,7 @@ def build_stage2_system(domain_knowledge: str, calibration_knowledge: str,
     role_type = profile.get("role_type", "产品经理")
     # T8: 外部化提示词（config/prompts.yaml 覆盖内联默认）
     s2_cfg = PIPELINE_CFG["stage2"]
-    return _PROMPTS["stage2_system"].format(
+    return cast(str, _PROMPTS["stage2_system"].format(
         role_type=role_type,
         domain_knowledge=domain_knowledge,
         calibration_knowledge=calibration_knowledge,
@@ -820,13 +821,13 @@ def build_stage2_system(domain_knowledge: str, calibration_knowledge: str,
         stage2_top_low=s2_cfg.get("top_score_low", 90),
         stage2_top_high=s2_cfg.get("top_score_high", 97),
         stage2_bottom_cap=s2_cfg.get("bottom_cap", 75),
-    )
+    ))
 
 
 async def stage2(client: LLMClient, candidate_summary: str,
                  domain_knowledge: str, calibration_knowledge: str,
                  profile: dict, top_jobs: list[dict],
-                 progress_callback=None, tracer: "ExecutionTracer" = None) -> list[dict]:
+                 progress_callback=None, tracer: "ExecutionTracer | None" = None) -> tuple[list[dict], int]:
     """Stage 2: Listwise 分组精排 + 风险标注"""
     stage2_failures = 0
     GROUP_SIZE = PIPELINE_CFG["stage2"]["group_size"]  # 每组岗位数，模型可有效对比
@@ -977,19 +978,19 @@ def _build_rerank_system() -> str:
     """格式化全局重排 system prompt，注入配置中的分数带参数。"""
     score_high = PIPELINE_CFG["output"]["score_high"]
     score_mid = PIPELINE_CFG["output"]["score_mid"]
-    return _GLOBAL_RERANK_TEMPLATE.format(
+    return cast(str, _GLOBAL_RERANK_TEMPLATE.format(
         rerank_top_score=score_high,
         rerank_bottom_score=score_mid,
         rerank_min_gap=20,
         rerank_top_score_minus_2=score_high - 2,
-    )
+    ))
 
 
 async def global_rerank(client: LLMClient, candidate_summary: str,
                         calibration_knowledge: str, profile: dict,
                         candidates: list[dict]) -> list[dict]:
     """Stage 2.5: 对全部 Stage 2 输出做全局重排，解决组间分数不可比问题。
-    
+
     策略：
     - ≤ 15 个：一次调用搞定
     - > 15 个：按 Stage 2 分档分层重排
@@ -1006,7 +1007,7 @@ async def global_rerank(client: LLMClient, candidate_summary: str,
 
     async def rerank_batch(batch: list[dict], score_high: int, score_low: int) -> dict:
         """对一批岗位做全局排序，返回 {job_id: {rank, score, reason}}
-        
+
         分数从 score_high（rank=1）到 score_low（rank=N）线性递减。
         """
         if not batch:
@@ -1037,7 +1038,7 @@ async def global_rerank(client: LLMClient, candidate_summary: str,
 
         content = await client.chat(_build_rerank_system(), user_prompt,
                                     temperature=0.0, max_tokens=4000)
-        
+
         # 解析
         content = content.strip()
         if content.startswith("```"):
@@ -1173,7 +1174,7 @@ def _clean_checkpoints(output_path: str) -> None:
     ckpt_dir = _checkpoint_dir(output_path)
     if ckpt_dir.exists():
         shutil.rmtree(ckpt_dir)
-        print(f"  [checkpoint] 已清理")
+        print("  [checkpoint] 已清理")
 
 
 # ============================================================
@@ -1200,7 +1201,7 @@ def _read_career_jsonl(path: str) -> list[dict]:
     return events
 
 
-def analyze_career_history(history_path: str, config: dict = None) -> dict:
+def analyze_career_history(history_path: str, config: dict | None = None) -> dict:
     """把 career_log.jsonl 复盘数据解析为可执行的校准信号。
 
     返回：
@@ -1262,7 +1263,7 @@ def analyze_career_history(history_path: str, config: dict = None) -> dict:
     }
 
 
-def compute_history_delta(job: dict, analysis: dict, config: dict = None) -> tuple[float, str]:
+def compute_history_delta(job: dict, analysis: dict, config: dict | None = None) -> tuple[float, str]:
     """根据复盘信号计算单个岗位的 stage1_score 调整量（确定性）。
 
     命中的复盘强化方向 → 加分（封顶 max_boost）；
@@ -1352,7 +1353,7 @@ def _maybe_notify_summary(output, args):
     notify("smart_score", f"评分完成：{total} 岗（A {a} / B {b}）", wh)
 
 
-async def run_pipeline(args, tracer: "ExecutionTracer" = None) -> dict:
+async def run_pipeline(args, tracer: "ExecutionTracer | None" = None) -> dict:
     """执行完整的六阶段评分 pipeline"""
     print("=" * 60)
     print("Smart Score — 六阶段智能评分 Pipeline")
@@ -1374,7 +1375,7 @@ async def run_pipeline(args, tracer: "ExecutionTracer" = None) -> dict:
     top_k = args.top_k
 
     # Pre-Filter: 确定性预过滤（在花 token 之前排除明显不匹配的 JD）
-    print(f"\n[Pre-Filter] 确定性预过滤")
+    print("\n[Pre-Filter] 确定性预过滤")
     from pre_filter import pre_filter
     filter_config = {
         "include_intern": getattr(args, "include_intern", False),
@@ -1393,7 +1394,7 @@ async def run_pipeline(args, tracer: "ExecutionTracer" = None) -> dict:
     stage1_stats = None  # T1: 由 stage1() 返回；从 checkpoint 恢复时不重建
 
     if stage1_ckpt:
-        print(f"\n[Stage 1] ⏩ 从 checkpoint 恢复（跳过）")
+        print("\n[Stage 1] ⏩ 从 checkpoint 恢复（跳过）")
         all_scored = stage1_ckpt["all_scored"]
         top_jobs = stage1_ckpt["top_jobs"]
         wall1 = stage1_ckpt.get("wall_time", 0)
@@ -1499,7 +1500,7 @@ async def run_pipeline(args, tracer: "ExecutionTracer" = None) -> dict:
         wall_rerank = 0
 
     # Post-Judge: 确定性后处理
-    print(f"\n[Post-Judge] 确定性后处理（英语/核心团队/技术依赖/分布约束）")
+    print("\n[Post-Judge] 确定性后处理（英语/核心团队/技术依赖/分布约束）")
     from post_judge import post_judge
     analyzed = post_judge(analyzed, profile, config=PIPELINE_CFG.get("post_judge"))
 
@@ -1678,28 +1679,28 @@ def dry_run(args):
     total_cost = s1_cost + s2_cost
 
     print(f"\n{'─' * 50}")
-    print(f"Pre-Filter:")
+    print("Pre-Filter:")
     print(f"  输入 {total_jobs} → 过滤后 {after_filter} 条进入 Stage 1")
     print(f"  排除: 实习={stats['excluded_intern']} 外包={stats['excluded_outsource']} "
           f"英语={stats['excluded_english']} 年限={stats['excluded_experience']}")
-    print(f"\nStage 1 (全量粗筛):")
+    print("\nStage 1 (全量粗筛):")
     print(f"  模型: {args.stage1_model} | 并发: {args.concurrency}")
     print(f"  调用次数: {after_filter} | 预估 tokens: ~{s1_total:,}")
     print(f"  预估耗时: ~{s1_time}s")
-    print(f"\nStage 1.5 (辨别知识):")
+    print("\nStage 1.5 (辨别知识):")
     print(f"  模型: {args.stage2_model} | 预估 tokens: ~{s15_tokens:,}")
-    print(f"\nStage 2 (精排):")
+    print("\nStage 2 (精排):")
     print(f"  模型: {args.stage2_model} | 组并发: {s2_concurrency}")
     print(f"  Top-K: {top_k} → {stage2_groups} 组 × {PIPELINE_CFG['stage2']['group_size']} 个/组")
     print(f"  预估 tokens: ~{s2_total:,} | 预估耗时: ~{s2_time}s")
-    print(f"\nStage 2.5 (全局重排):")
+    print("\nStage 2.5 (全局重排):")
     print(f"  预估 tokens: ~{s25_tokens:,} | 预估耗时: ~{s25_time}s")
     print(f"\n{'─' * 50}")
-    print(f"总预估:")
+    print("总预估:")
     print(f"  Tokens: ~{total_tokens:,}")
     print(f"  耗时:   ~{total_time}s ({total_time // 60}分{total_time % 60}秒)")
     print(f"  成本:   ~¥{total_cost:.2f} (按 gpt-4o-mini/gpt-4.1-mini 公价估算)")
-    print(f"\n提示: 实际调用请去掉 --dry-run 参数")
+    print("\n提示: 实际调用请去掉 --dry-run 参数")
 
 
 def _print_trace_summary(tracer: "ExecutionTracer"):
